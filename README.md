@@ -1,3 +1,4 @@
+
 # hmpps-component-dependencies
 POC to look into surfacing app insight dependencies for the developer portal
 
@@ -137,7 +138,3 @@ We can also use this dependency information to support:
 * Only works for applications using AppInsights
 
 * Needs some thorough testing
-<<<<<<< HEAD
->>>>>>> a0ff9bf (Initial commit)
-=======
->>>>>>> a0ff9bf (Initial commit)
