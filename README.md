@@ -1,21 +1,25 @@
+
 # hmpps-component-dependencies
 POC to look into surfacing app insight dependencies for the developer portal
 
 ## why?
 
-This is a proof of component to show how we can expose dependency information about components by combining data from the data catalogue and app insights.
+This is a proof of component to show how we can expose dependency information about components by combining data from the service catalogue and app insights.
 
-This supports a couple of use cases for teams:
+This supports at least the following use cases:
 
-- Easily see who they would impact with changes
-- Help support the root cause analysis process during outages
+- It allows teams to easily see which components they would impact by changing their service
+- It helps teams support identify root cause during outages
 
 The benefit of using app insights for this is that it provides a live view of what the components actually call rather than having to rely on accuracy of health checks being present.
 
 ## what?
 
 This builds up a graph of bidirectionally interconnected component nodes.
-Components can be retrieved by name and then the following 4 functions are exposed on them:
+
+This graph can be navigated in both directions, to view a components dependencies and also the things that rely on it. 
+
+Components can be retrieved by name and then the following 4 functions are available:
 
 ### `getDependencies`
 
@@ -50,9 +54,9 @@ For CVL API example:
 ]
 ```
 
-This shows two paths, the first example shows the chain of dependencies to demonstrate how CVL relies on `hmpps-external-users-api`.
+This shows two paths, the first example shows the chain of dependencies to demonstrate how `create-and-vary-a-licence-api` relies on `hmpps-external-users-api`.
 
-The second path demonstrates how it handles the bidrectional dependency between `hmpps-auth` and `nomis-user-roles-api` using the syntax: `*INF* (component-name)`.
+The second path demonstrates how it handles the bidrectional dependency between `hmpps-auth` and `nomis-user-roles-api` using the arbitrary syntax: `*INF* (component-name)`.
 
 ### `getDependents`
 
@@ -73,7 +77,7 @@ For CVL, the list looks like this:
 ];
 ```
 
-the frontend, jobs and few external clients including some integrating services.
+So, the frontend, some jobs and a few external clients including some integrating services.
 
 ### `getDependentPaths`
 
@@ -93,9 +97,9 @@ For CVL API:
 ];
 ```
 
-We can see that if CVL went down it could affect several components including jobs and transitively, the `make-recall-decisions-and-delius` component.
+We can see that if CVL went down it could transitively impact the `make-recall-decisions-and-delius` component.
 
-NB: For components with lots of dependencies, this list can be very large as there maybe multiple reasons (paths) why it being down could affect a component. For instance, as well as CVL directly relying on `hmpps-auth`, CVL could go down because it relies on `prison-api` which also relies on `hmpps-auth` (this can create a combinatorial explosion: >900 paths)
+NB: For components with lots of dependencies, this list can be very large as there are possible multiple reasons (paths) why it being down could affect a component. For instance, as well as CVL directly relying on `hmpps-auth`, CVL could go down because it relies on `prison-api` which also relies on `hmpps-auth`. This creates a bit of a combinatorial explosion: >900 paths.
 
 ## how?
 
@@ -110,22 +114,18 @@ The data is joined by linking:
 * AppInsights `cloud_RoleName` to the `name` of the component
 * AppInsights `target` to an environments `hostname`
 
-This allows us to build a graph of each component to both it's dependencies and the things it depends on.
-
-This graph can be navigated in both directions. 
-
 How this would this would be integrated into the component dashboard would require a bit of a conversation.
 
 Potentially a node service/job that would semi regularly to gather the data and push the dependency info into redis or the service catalogue. Or we could push in the raw data and build up the dependency info on the fly on the frontend.
 
 ## and...
 
-We can also use this dependency information to support:
+We could also use this linked dependency information to support:
 
 - surfacing where people are missing health checks for their dependencies
 - surfacing components that are not in the catalogue
   - (this includes a lot of probation integration components, some of which are used by prison services)
-- could be expanded to support surfacing AWS dependencies - use of queues, topics, RDS, redis
+- surfacing AWS dependencies - use of queues, topics, RDS, redis
 
 ## Limitations
 
@@ -137,7 +137,3 @@ We can also use this dependency information to support:
 * Only works for applications using AppInsights
 
 * Needs some thorough testing
-<<<<<<< HEAD
->>>>>>> a0ff9bf (Initial commit)
-=======
->>>>>>> a0ff9bf (Initial commit)
