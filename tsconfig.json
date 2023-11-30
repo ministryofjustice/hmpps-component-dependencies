@@ -1,0 +1,23 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+      "lib": ["es2021"],
+      "target": "ESNext",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "skipLibCheck": true,
+      "noEmit": false,
+      "allowJs": true,
+      "checkJs": true,
+      "resolveJsonModule": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "noImplicitAny": true,
+      "experimentalDecorators": true,
+      "typeRoots": ["./node_modules/@types"]
+    },
+    "exclude": ["node_modules"],
+    "include": ["src/*ts", "plopfile.js"]
+  }
+  
