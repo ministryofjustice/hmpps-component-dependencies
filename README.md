@@ -4,7 +4,7 @@ POC to look into surfacing app insight dependencies for the developer portal
 
 ## why?
 
-This is a proof of component to show how we can expose dependency information about components by combining data from the service catalogue and app insights.
+This is a proof of concept to show how we can expose dependency information about components by combining data from the service catalogue and app insights.
 
 This supports at least the following use cases:
 
