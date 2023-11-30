@@ -6,7 +6,7 @@ POC to look into surfacing app insight dependencies for the developer portal
 
 This is a proof of concept to show how we can expose dependency information about components by combining data from the service catalogue and app insights.
 
-This supports at least the following use cases:
+This supports the following use cases:
 
 - It allows teams to easily see which components they would impact by changing their service
 - It helps teams support identify root cause during outages
