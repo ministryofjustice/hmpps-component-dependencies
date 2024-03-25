@@ -1,5 +1,5 @@
 import fs from "fs";
-
+import { getDependencies } from "./appInsights";
 /**
  * Pulled from service catalogue, e.g: 
  * curl -X 'GET' \
@@ -7,16 +7,6 @@ import fs from "fs";
   -H 'accept: application/json'| jq -r '.data ' > components.json
  */
 const COMPONENT_JSON_FILE = "components.json";
-
-/**
- * Pulled from app insights, e.g:
- *
- *  dependencies
- *  | where type == 'HTTP'
- *  | distinct cloud_RoleName, target
- *
- */
-const DEPENDENCY_CSV_FILE = "dependencies.csv";
 
 type Component = {
   name: string;
@@ -49,21 +39,22 @@ export type ComponentLookup = (hostname: string) => string;
 export const componentLookup: ComponentLookup = (hostname) => lookup[hostname];
 
 // A component name to the hostname it relies on.
-export type Dependency = [componentName: string, dependencyHostname: string];
-
-const dependencies: Dependency[] = fs
-  .readFileSync(DEPENDENCY_CSV_FILE, "utf-8")
-  .split("\r\n")
-  .filter((l) => l)
-  .map(
-    (l) => l.split('","').map((entry) => entry.replace('"', "")) as Dependency
-  );
+export type Dependency = [
+  componentName: string,
+  dependencyHostname: string,
+  type: string
+];
 
 // We need to seed with known services to ensure we create nodes for things with no dependencies that may be relied on by other things
 const knownComponents: Dependency[] = components.map((check) => [
   check.name,
   undefined,
+  "component",
 ]);
 
-export const componentDependencies: Dependency[] =
-  knownComponents.concat(dependencies);
+export const gatherComponentDependencies = async () => {
+  const dependencies: Dependency[] = (await getDependencies()).rows.map(
+    (row) => [row[0], row[1], row[2]]
+  );
+  return knownComponents.concat(dependencies);
+};
