@@ -1,12 +1,24 @@
+import { Dependency } from "./data-sources";
+import { categorise } from "./dependency-categoriser";
+
 export class ComponentNode {
-  unknownDependencies: string[] = [];
+  public unknownDependencies: Dependency[] = [];
   public reliedUponBy: ComponentNode[] = [];
   public knownDependencies: Record<string, ComponentNode> = {};
+  public dependencyCategories: string[] = [];
 
   constructor(readonly name: string) {}
 
-  public addUnknownDependency(url: string) {
-    this.unknownDependencies.push(url);
+  public addUnknownDependency(dependency: Dependency) {
+    const category = categorise(dependency);
+    if (category) {
+      if (!this.dependencyCategories.includes(category)) {
+        this.dependencyCategories.push(category);
+      }
+    }
+    if (!category || category == "HTTP") {
+      this.unknownDependencies.push(dependency);
+    }
   }
 
   public addDependency(componentName: string) {
@@ -119,7 +131,7 @@ export class ComponentNode {
       return seen;
     }
     const result = dependencies
-      .filter((rel) => !seen[rel.name])
+      .filter((rel) => !seen[rel?.name])
       .reduce((acc, rel) => {
         return { ...acc, ...this.getAllDependencies_int(rel, component, seen) };
       }, {});

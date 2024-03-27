@@ -1,3 +1,4 @@
 node_modules/
 dependencies.csv
 components.json
+.env

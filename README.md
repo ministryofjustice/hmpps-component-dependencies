@@ -1,5 +1,6 @@
 
 # hmpps-component-dependencies
+
 POC to look into surfacing app insight dependencies for the developer portal
 
 ## why?
@@ -111,8 +112,14 @@ It requires two sets of information:
 (example curl/AppInsights queries can be found in `data-sources.ts`)
 
 The data is joined by linking:
-* AppInsights `cloud_RoleName` to the `name` of the component
-* AppInsights `target` to an environments `hostname`
+
+- AppInsights `cloud_RoleName` to the `name` of the component
+- AppInsights `target` to an environments `hostname`
+
+
+This allows us to build a graph of each component to both it's dependencies and the things it depends on.
+
+This graph can be navigated in both directions.
 
 How this would this would be integrated into the component dashboard would require a bit of a conversation.
 
@@ -129,11 +136,11 @@ We could also use this linked dependency information to support:
 
 ## Limitations
 
-* This relies on the cloud role name matching the project name which may not be the case in all situations
-(Should be able to write something to narrow down where there is a mismatch)
+- This relies on the cloud role name matching the project name which may not be the case in all situations
+  (Should be able to write something to narrow down where there is a mismatch)
 
-* Requires components to be in the service catalogue!
+- Requires components to be in the service catalogue!
 
-* Only works for applications using AppInsights
+- Only works for applications using AppInsights
 
-* Needs some thorough testing
+- Needs some thorough testing

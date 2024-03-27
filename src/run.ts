@@ -1,51 +1,26 @@
 import { buildComponentMap } from "./build-tree";
-import { componentDependencies, componentLookup } from "./data-sources";
+import { gatherComponentDependencies, componentLookup } from "./data-sources";
+import { gather } from "./dependency-info-gatherer";
 
-const components = buildComponentMap(componentDependencies, componentLookup);
+const run = async () => {
+  const dependencies = await gatherComponentDependencies();
+  const components = buildComponentMap(dependencies, componentLookup);
 
-const componentName = "create-and-vary-a-licence-api"; // "nomis-user-roles-api";
-const component = components[componentName];
+  const { categoryToComponent, componentDependencyInfo, unknownDependencies } =
+    await gather(components);
 
-console.log("\n *** Print info about things that rely on us *** \n");
+  unknownDependencies.forEach((dependency) => console.log(dependency));
 
-console.log(
-  component
-    .getAllDependents()
-    .map((c) => c.name)
-    .sort()
-);
+  Object.entries(categoryToComponent).forEach(([category, components]) =>
+    console.log(`${category} =>  ${components}\n`)
+  );
 
-console.log(
-  component
-    .getAllDependentPaths()
-    .map((p) => p.map((s) => s.name).join(" => "))
-);
+  console.log(
+    JSON.stringify(componentDependencyInfo["whereabouts-api"], null, 4)
+  );
+};
 
-console.log("\n *** Print info about things we rely on *** \n");
-
-console.log(
-  component
-    .getAllDependencies()
-    .map((c) => c.name)
-    .sort()
-);
-
-console.log(
-  component
-    .getAllDependencyPaths()
-    .map((p) => p.map((s) => s.name).join(" => "))
-);
-
-console.log("\n *** unknown components *** \n");
-
-const uniqueUnknowns = [
-  ...new Set(
-    Object.values(components)
-      .flatMap((s) => s.unknownDependencies)
-      .sort()
-  ),
-];
-
-uniqueUnknowns
-  .filter((url) => url.includes("service.justice.gov.uk"))
-  .forEach((u) => console.log(u));
+run().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
