@@ -6,6 +6,6 @@ const Queries = {
         | where cloud_RoleName != "" and type <> "InProc" and type <> 'Ajax'
         | distinct cloud_RoleName, target, type
 `,
-};
+}
 
-export default Queries;
+export default Queries

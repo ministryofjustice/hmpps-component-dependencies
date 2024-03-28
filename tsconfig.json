@@ -5,6 +5,7 @@
       "target": "ESNext",
       "module": "commonjs",
       "moduleResolution": "node",
+      "outDir": "./dist",
       "sourceMap": true,
       "skipLibCheck": true,
       "noEmit": false,
@@ -17,6 +18,5 @@
       "experimentalDecorators": true,
       "typeRoots": ["./node_modules/@types"]
     },
-    "exclude": ["node_modules"],
-    "include": ["src/*ts", "plopfile.js"]
+    "exclude": ["node_modules", "dist"],
   }
