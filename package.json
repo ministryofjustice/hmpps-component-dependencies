@@ -5,17 +5,48 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand",
-    "start": "ts-node -r dotenv/config src/run"
+    "start": "ts-node -r dotenv/config src/run",
+    "run-examples": "ts-node -r dotenv/config src/examples",
+    "lint": "eslint . --cache --max-warnings 0",
+    "lint-fix": "eslint . --cache --max-warnings 0 --fix",
+    "typecheck": "tsc",
+    "prepare": "husky",
+    "security_audit": "npx audit-ci --config audit-ci.json"
   },
   "author": "Andrew Lee",
   "license": "MIT",
+  "lint-staged": {
+    "*.{ts,js,css}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": "^20",
+    "npm": "^10"
+  },
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/superagent": "^8.1.6",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "audit-ci": "^6.6.1",
     "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-no-only-tests": "^3.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "husky": "^9.0.11",
     "jest": "^27.5.1",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
     "ts-jest": "^27.1.3",
-    "typescript": "^4.6.2"
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "applicationinsights": "^2.9.5",
