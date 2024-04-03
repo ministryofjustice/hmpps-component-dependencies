@@ -1,4 +1,4 @@
-import type { Dependency } from './data/data-sources'
+import type { Dependency } from './data/ComponentInfo'
 
 const targetIncludes = (...values: string[]) => {
   const valuesToCheck = values.map(value => value.toLowerCase())

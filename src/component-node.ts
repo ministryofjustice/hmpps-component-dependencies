@@ -1,4 +1,4 @@
-import { Dependency } from './data/data-sources'
+import type { Dependency } from './data/ComponentInfo'
 import categorise from './dependency-categoriser'
 
 export default class ComponentNode {

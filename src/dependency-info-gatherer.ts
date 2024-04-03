@@ -1,5 +1,4 @@
-import { type Components } from './build-tree'
-import { Dependency } from './data/data-sources'
+import type { Dependency, Components } from './data/ComponentInfo'
 
 type DependencyReference = { name: string; type: string }
 type DependencyInfo = {
