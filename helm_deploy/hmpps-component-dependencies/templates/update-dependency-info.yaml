@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: update-dependency-info
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjobs.updateDependencyInfo }}
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 43200
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hmpps-component-dependencies
+            image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+            args:
+            - node
+            - dist/run
+{{ include "deployment.envs" . | nindent 12 }}
+          restartPolicy: Never
+          activeDeadlineSeconds: 3600

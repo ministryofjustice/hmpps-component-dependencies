@@ -1,0 +1,9 @@
+
+image:
+  repository: ghcr.io/ministryofjustice/hmpps-component-dependencies
+  tag: latest
+
+appinsightEnvs: ["DEV", "PREPROD", "PROD"]
+
+cronjobs:
+  updateDependencyInfo: 0 */6 * * *

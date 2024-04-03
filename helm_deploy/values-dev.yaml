@@ -1,0 +1,9 @@
+---
+# Per environment values which override defaults in hmpps-component-dependencies/values.yaml
+
+redis:
+  secretName: elasticache-redis
+
+apis:
+  serviceCatalogue:
+    url: https://service-catalogue-dev.hmpps.service.justice.gov.uk
