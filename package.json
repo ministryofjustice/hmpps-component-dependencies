@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand",
+    "test": "npm run lint && npm run typecheck && jest --runInBand",
     "start": "ts-node -r dotenv/config src/run",
     "run-examples": "ts-node -r dotenv/config src/examples",
     "lint": "eslint . --cache --max-warnings 0",
     "lint-fix": "eslint . --cache --max-warnings 0 --fix",
     "typecheck": "tsc",
     "prepare": "husky",
+    "build": "rm -rf dist && tsc",
     "security_audit": "npx audit-ci --config audit-ci.json"
   },
   "author": "Andrew Lee",
