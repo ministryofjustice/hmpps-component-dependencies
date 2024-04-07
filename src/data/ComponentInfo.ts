@@ -1,7 +1,7 @@
 import ComponentNode from '../component-node'
 
 // A component name to the hostname it relies on.
-export type Dependency = [componentName: string, dependencyHostname: string, type: string]
+export type Dependency = { componentName: string; dependencyHostname: string; type: string }
 
 export type Component = {
   name: string
@@ -24,7 +24,7 @@ export class ComponentInfo {
   }
 
   getKnownComponents(): Dependency[] {
-    return this.components.map(check => [check.name, undefined, 'component'])
+    return this.components.map(check => ({ componentName: check.name, dependencyHostname: undefined, type: 'component' }))
   }
 
   getComponentForHostname(hostName: string): Component {
@@ -34,12 +34,12 @@ export class ComponentInfo {
   getComponentMap(dependencies: Dependency[]): Components {
     const componentMap = dependencies.reduce(
       (acc, dependency) => {
-        const [componentName, url] = dependency
+        const { componentName, dependencyHostname } = dependency
         const component = acc[componentName] || new ComponentNode(componentName)
-        const dependentComponent = this.getComponentForHostname(url)
+        const dependentComponent = this.getComponentForHostname(dependencyHostname)
         if (dependentComponent) {
           component.addDependency(dependentComponent.name)
-        } else if (url) component.addUnknownDependency(dependency)
+        } else if (dependencyHostname) component.addUnknownDependency(dependency)
         acc[componentName] = component
         return acc
       },

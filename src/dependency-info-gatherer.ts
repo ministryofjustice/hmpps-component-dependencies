@@ -1,4 +1,5 @@
 import type { Dependency, Components } from './data/ComponentInfo'
+import logger from './utils/logger'
 
 type DependencyReference = { name: string; type: string }
 type DependencyInfo = {
@@ -10,16 +11,17 @@ type DependencyInfo = {
   dependents: string[]
 }
 
-const buildUnknownDependencies = (components: Components) => {
+const buildMissingComponents = (components: Components) => {
   const seen: Record<string, Dependency> = {}
   Object.values(components)
     .flatMap(s => s.unknownDependencies)
     .forEach(i => {
-      seen[`${i[1]}$${i[2]}`] = i
+      seen[`${i.dependencyHostname}$${i.type}`] = i
     })
   return Object.values(seen)
-    .sort((a, b) => a[1].localeCompare(b[1]))
-    .map(([, target, type]) => ({ target, type }))
+    .sort((a, b) => a.dependencyHostname.localeCompare(b.dependencyHostname))
+    .map(({ dependencyHostname, type }) => ({ dependencyHostname, type }))
+    .filter(dependency => dependency.dependencyHostname.includes('service.justice.gov.uk'))
 }
 
 const buildCategoryToComponent = (components: Components): Record<string, string[]> => {
@@ -40,8 +42,8 @@ const buildComponentInfo = (componentsMap: Components): Record<string, Dependenc
   return Object.entries(componentsMap).reduce(
     (acc, [componentName, component]) => {
       const components = Object.keys(component.knownDependencies).map(name => name)
-      const other = component.unknownDependencies.map(([, target, type]) => ({
-        name: target,
+      const other = component.unknownDependencies.map(({ dependencyHostname, type }) => ({
+        name: dependencyHostname,
         type,
       }))
       const resources = component.dependencyCategories.map(name => name)
@@ -56,12 +58,14 @@ const buildComponentInfo = (componentsMap: Components): Record<string, Dependenc
 
 const gatherDependencyInfo = async (components: Components) => {
   const categoryToComponent = buildCategoryToComponent(components)
-  const unknownDependencies = buildUnknownDependencies(components)
+  const missingComponents = buildMissingComponents(components)
   const componentDependencyInfo = buildComponentInfo(components)
+
+  const missingServices = missingComponents.map(c => c.dependencyHostname).sort()
+  logger.info(`Services missing from service catalogue: \n\t${missingServices.join('\n\t')}`)
 
   return {
     categoryToComponent,
-    unknownDependencies,
     componentDependencyInfo,
   }
 }

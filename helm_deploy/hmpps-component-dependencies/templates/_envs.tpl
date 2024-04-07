@@ -40,4 +40,8 @@ env:
 
   - name: REDIS_TLS_ENABLED
     value: "true"
+
+  - name: REDIS_TLS_VERIFICATION
+    value: "true"
+    
 {{end -}}
