@@ -1,17 +1,17 @@
-import type { Dependency, Components } from './data/ComponentInfo'
-import logger from './utils/logger'
+import type { Dependency, ComponentMap } from './data/Components'
 
 type DependencyReference = { name: string; type: string }
+type Dependent = { name: string; isKnownComponent: boolean }
 type DependencyInfo = {
   dependencies: {
     components: string[]
-    resources: string[]
+    categories: string[]
     other: DependencyReference[]
   }
-  dependents: string[]
+  dependents: Dependent[]
 }
 
-const buildMissingComponents = (components: Components) => {
+const buildMissingComponents = (components: ComponentMap) => {
   const seen: Record<string, Dependency> = {}
   Object.values(components)
     .flatMap(s => s.unknownDependencies)
@@ -24,7 +24,7 @@ const buildMissingComponents = (components: Components) => {
     .filter(dependency => dependency.dependencyHostname.includes('service.justice.gov.uk'))
 }
 
-const buildCategoryToComponent = (components: Components): Record<string, string[]> => {
+const buildCategoryToComponent = (components: ComponentMap): Record<string, string[]> => {
   return Object.values(components).reduce(
     (acc, component) => {
       component.dependencyCategories.forEach(category => {
@@ -38,35 +38,35 @@ const buildCategoryToComponent = (components: Components): Record<string, string
   )
 }
 
-const buildComponentInfo = (componentsMap: Components): Record<string, DependencyInfo> => {
-  return Object.entries(componentsMap).reduce(
-    (acc, [componentName, component]) => {
-      const components = Object.keys(component.knownDependencies).map(name => name)
-      const other = component.unknownDependencies.map(({ dependencyHostname, type }) => ({
+const buildComponentInfo = (componentMap: ComponentMap): Record<string, DependencyInfo> => {
+  return Object.entries(componentMap).reduce(
+    (acc, [componentName, node]) => {
+      const components = Object.keys(node.knownDependencies).map(name => name)
+      const other = node.unknownDependencies.map(({ dependencyHostname, type }) => ({
         name: dependencyHostname,
         type,
       }))
-      const resources = component.dependencyCategories.map(name => name)
-      const dependents = component.reliedUponBy.map(({ name }) => name)
+      const categories = node.dependencyCategories.map(name => name)
+      const dependents = Object.values(node.reliedUponBy).map(({ name, component }) => ({ name, isKnownComponent: Boolean(component) }))
 
-      acc[componentName] = { dependencies: { components, resources, other }, dependents }
+      acc[componentName] = { dependencies: { components, categories, other }, dependents }
       return acc
     },
     {} as Record<string, DependencyInfo>,
   )
 }
 
-const gatherDependencyInfo = async (components: Components) => {
+const gatherDependencyInfo = (components: ComponentMap) => {
   const categoryToComponent = buildCategoryToComponent(components)
   const missingComponents = buildMissingComponents(components)
   const componentDependencyInfo = buildComponentInfo(components)
 
   const missingServices = missingComponents.map(c => c.dependencyHostname).sort()
-  logger.info(`Services missing from service catalogue: \n\t${missingServices.join('\n\t')}`)
 
   return {
     categoryToComponent,
     componentDependencyInfo,
+    missingServices,
   }
 }
 

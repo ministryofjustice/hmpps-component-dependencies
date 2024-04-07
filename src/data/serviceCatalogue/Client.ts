@@ -1,5 +1,5 @@
 import superagent from 'superagent'
-import { type Component } from '../ComponentInfo'
+import { type Component } from '../Components'
 
 export type ServiceCatalogueComponent = {
   name: string
