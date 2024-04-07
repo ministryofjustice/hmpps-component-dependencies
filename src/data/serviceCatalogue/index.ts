@@ -1,5 +1,5 @@
 import ServiceCatalogueClient from './Client'
-import { ComponentInfo } from '../ComponentInfo'
+import { Components } from '../Components'
 
 const getComponents = async (serviceCatalogHostName: string) => {
   const client = new ServiceCatalogueClient(serviceCatalogHostName)
@@ -16,7 +16,7 @@ const getComponents = async (serviceCatalogHostName: string) => {
           url: env.url.replace('https://', ''),
         })),
     }))
-  return new ComponentInfo(filteredComponents)
+  return new Components(filteredComponents)
 }
 
 export default getComponents

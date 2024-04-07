@@ -1,5 +1,5 @@
 import { type Environment } from '../../config'
-import { Dependency } from '../ComponentInfo'
+import { type Dependency } from '../Components'
 import AppInsights from './Client'
 import Queries from './queries'
 

@@ -1,16 +1,19 @@
-import type { Dependency } from './data/ComponentInfo'
+import type { Component, Dependency } from './data/Components'
 import categorise from './dependency-categoriser'
 
 export default class ComponentNode {
   public unknownDependencies: Dependency[] = []
 
-  public reliedUponBy: ComponentNode[] = []
+  public reliedUponBy: Record<string, ComponentNode> = {}
 
   public knownDependencies: Record<string, ComponentNode> = {}
 
   public dependencyCategories: string[] = []
 
-  constructor(readonly name: string) {}
+  constructor(
+    readonly name: string,
+    readonly component: Component,
+  ) {}
 
   public addUnknownDependency(dependency: Dependency) {
     const category = categorise(dependency)
@@ -24,12 +27,18 @@ export default class ComponentNode {
     }
   }
 
-  public addDependency(componentName: string) {
+  public addComponentDependency(componentName: string) {
+    if (!this.dependencyCategories.includes('HTTP')) {
+      this.dependencyCategories.push('HTTP')
+    }
     this.knownDependencies[componentName] = undefined
   }
 
   public resolveDependency(componentName: string, ref: ComponentNode) {
-    if (ref) ref.reliedUponBy.push(this)
+    if (ref) {
+      // eslint-disable-next-line no-param-reassign
+      ref.reliedUponBy[this.name] = this
+    }
     this.knownDependencies[componentName] = ref
   }
 
@@ -58,7 +67,7 @@ export default class ComponentNode {
     if (!component.reliedUponBy.length) {
       return [path]
     }
-    const result = component.reliedUponBy.flatMap(rel => this.getAllDependentPaths_int(rel, [...path]))
+    const result = Object.values(component.reliedUponBy).flatMap(rel => this.getAllDependentPaths_int(rel, [...path]))
     return result
   }
 

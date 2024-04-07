@@ -1,8 +1,7 @@
 import initialiseAppInsights from './utils/appInsights'
 import applicationInfo from './utils/applicationInfo'
 
-import config, { type Environment } from './config'
-import type { ComponentInfo, Dependency } from './data/ComponentInfo'
+import config from './config'
 import gatherDependencyInfo from './dependency-info-gatherer'
 import getComponents from './data/serviceCatalogue'
 import getDependencies from './data/appInsights'
@@ -11,11 +10,6 @@ import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
 
 initialiseAppInsights(applicationInfo())
-
-const gatherComponentDependencies = async (env: Environment, components: ComponentInfo) => {
-  const dependencies: Dependency[] = await getDependencies(env)
-  return components.getKnownComponents().concat(dependencies)
-}
 
 const run = async () => {
   const redisClient = createRedisClient()
@@ -26,18 +20,18 @@ const run = async () => {
   logger.info(`Starting to gather dependency info`)
 
   const components = await getComponents(config.serviceCatalogueUrl)
-  const dependencies = await gatherComponentDependencies(config.environments.dev, components)
-  const componentMap = components.getComponentMap(dependencies)
+  const dependencies = await getDependencies(config.environments.dev)
+  const componentMap = components.buildComponentMap(dependencies)
 
-  const { categoryToComponent, componentDependencyInfo } = await gatherDependencyInfo(componentMap)
+  const { categoryToComponent, componentDependencyInfo, missingServices } = gatherDependencyInfo(componentMap)
+
+  logger.info(`Services missing from service catalogue: \n\t${missingServices.join('\n\t')}`)
 
   const categoryCounts = Object.entries(categoryToComponent).map(([category, comps]) => `${category} =>  ${comps.length}`)
   logger.info(`Category freqs: \n${categoryCounts.join('\n')}`)
 
   logger.info(`Starting to publish dependency info`)
-
-  const all = { componentDependencyInfo, categoryToComponent }
-  await redisService.write(all)
+  await redisService.write({ componentDependencyInfo, categoryToComponent })
 
   logger.info(`Finished publishing dependency info for ${Object.keys(componentMap).length} components`)
   await redisClient.quit()
