@@ -17,11 +17,19 @@ function get<T>(name: string, fallback: T = undefined): T | string {
 }
 
 const config = {
+  production,
   buildNumber: get('BUILD_NUMBER', '1_0_0'),
   productId: get('PRODUCT_ID', 'MISSING'),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx'),
   branchName: get('GIT_BRANCH', 'xxxxxxxxxxxxxxxxxxx'),
   serviceCatalogueUrl: get<string>('SERVICE_CATALOGUE_URL'),
+  redis: {
+    host: get('REDIS_HOST', 'localhost'),
+    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    password: process.env.REDIS_AUTH_TOKEN,
+    tlsEnabled: get('REDIS_TLS_ENABLED', 'false'),
+    tlsVerification: get('REDIS_TLS_VERIFICATION', 'true'),
+  },
   environments: {
     dev: {
       appInsightsCreds: {

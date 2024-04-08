@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import initialiseAppInsights from './utils/appInsights'
 import applicationInfo from './utils/applicationInfo'
 
@@ -7,29 +6,44 @@ import type { ComponentInfo, Dependency } from './data/ComponentInfo'
 import gatherDependencyInfo from './dependency-info-gatherer'
 import getComponents from './data/serviceCatalogue'
 import getDependencies from './data/appInsights'
+import { createRedisClient } from './data/redis/redisClient'
+import RedisService from './data/redis/redisService'
+import logger from './utils/logger'
 
 initialiseAppInsights(applicationInfo())
 
 const gatherComponentDependencies = async (env: Environment, components: ComponentInfo) => {
-  const dependencies: Dependency[] = (await getDependencies(env)).rows.map(row => [row[0], row[1], row[2]])
+  const dependencies: Dependency[] = await getDependencies(env)
   return components.getKnownComponents().concat(dependencies)
 }
 
 const run = async () => {
+  const redisClient = createRedisClient()
+  await redisClient.connect()
+
+  const redisService = new RedisService(redisClient)
+
+  logger.info(`Starting to gather dependency info`)
+
   const components = await getComponents(config.serviceCatalogueUrl)
   const dependencies = await gatherComponentDependencies(config.environments.dev, components)
   const componentMap = components.getComponentMap(dependencies)
 
-  const { categoryToComponent, componentDependencyInfo, unknownDependencies } = await gatherDependencyInfo(componentMap)
+  const { categoryToComponent, componentDependencyInfo } = await gatherDependencyInfo(componentMap)
 
-  unknownDependencies.forEach(dependency => console.log(dependency))
+  const categoryCounts = Object.entries(categoryToComponent).map(([category, comps]) => `${category} =>  ${comps.length}`)
+  logger.info(`Category freqs: \n${categoryCounts.join('\n')}`)
 
-  Object.entries(categoryToComponent).forEach(([category, comps]) => console.log(`${category} =>  ${comps}\n`))
+  logger.info(`Starting to publish dependency info`)
 
-  console.log(JSON.stringify(componentDependencyInfo['create-and-vary-a-licence-api'], null, 4))
+  const all = { componentDependencyInfo, categoryToComponent }
+  await redisService.write(all)
+
+  logger.info(`Finished publishing dependency info for ${Object.keys(componentMap).length} components`)
+  await redisClient.quit()
 }
 
 run().catch(e => {
-  console.error(e)
+  logger.error(e)
   process.exit(1)
 })
