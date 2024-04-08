@@ -1,11 +1,10 @@
 import superagent from 'superagent'
-import type { AppInsightsCreds } from '../../config'
+import { type AppInsightsCreds } from '../../config'
 
-type Row = string[]
 
 type QueryResult = {
   headers: string[]
-  rows: Row[]
+  rows: string[][]
 }
 
 export default class AppInsights {

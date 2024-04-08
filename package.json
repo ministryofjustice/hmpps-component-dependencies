@@ -29,6 +29,45 @@
     "node": "^20",
     "npm": "^10"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "isolatedModules": true
+        }
+      ]
+    },
+    "collectCoverageFrom": [
+      "server/**/*.{ts,js,jsx,mjs}"
+    ],
+    "testMatch": [
+      "<rootDir>/(src)/**/?(*.)(cy|test).{ts,js,jsx,mjs}"
+    ],
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test_results/jest/"
+        }
+      ],
+      [
+        "./node_modules/jest-html-reporter",
+        {
+          "outputPath": "test_results/unit-test-reports.html"
+        }
+      ]
+    ],
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "json",
+      "node",
+      "ts"
+    ]
+  },
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/superagent": "^8.1.6",
@@ -44,6 +83,8 @@
     "eslint-plugin-prettier": "^5.1.3",
     "husky": "^9.0.11",
     "jest": "^27.5.1",
+    "jest-html-reporter": "^3.10.2",
+    "jest-junit": "^16.0.0",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "ts-jest": "^27.1.3",

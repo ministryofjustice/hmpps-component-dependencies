@@ -4,3 +4,4 @@ components.json
 .env
 dist
 .eslintcache
+test_results/

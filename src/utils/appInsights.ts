@@ -1,5 +1,5 @@
-import { setup, defaultClient, TelemetryClient, DistributedTracingModes } from 'applicationinsights'
-import type { ApplicationInfo } from './applicationInfo'
+import { setup, defaultClient, type TelemetryClient, DistributedTracingModes } from 'applicationinsights'
+import { type ApplicationInfo } from './applicationInfo'
 
 export default function initialiseAppInsights({ applicationName, buildNumber }: ApplicationInfo): TelemetryClient {
   if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {

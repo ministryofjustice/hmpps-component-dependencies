@@ -1,6 +1,6 @@
 import { ClientClosedError } from 'redis'
 import logger from '../../utils/logger'
-import { RedisClient } from './redisClient'
+import { type RedisClient } from './redisClient'
 
 type Data = Parameters<RedisClient['json']['set']>[2]
 
