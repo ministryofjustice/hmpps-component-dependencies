@@ -1,6 +1,13 @@
+export enum EnvType {
+  PROD = 'PROD',
+  PREPROD = 'PREPROD',
+  DEV = 'DEV',
+}
+
 export type AppInsightsCreds = { appId: string; appKey: string }
 
 export type Environment = {
+  env: EnvType
   appInsightsCreds: AppInsightsCreds
 }
 
@@ -30,26 +37,29 @@ const config = {
     tlsEnabled: get('REDIS_TLS_ENABLED', 'false'),
     tlsVerification: get('REDIS_TLS_VERIFICATION', 'true'),
   },
-  environments: {
-    dev: {
+  environments: [
+    {
+      env: EnvType.DEV,
       appInsightsCreds: {
         appId: get('DEV_APPINSIGHTS_ID'),
         appKey: get('DEV_APPINSIGHTS_KEY'),
       },
-    } as Environment,
-    // preprod: {
-    //   appInsightsCreds: {
-    //     appId: get('PREPROD_APPINSIGHTS_ID'),
-    //     appKey: get('PREPROD_APPINSIGHTS_KEY'),
-    //   },
-    // } as Environment,
-    // prod: {
-    //   appInsightsCreds: {
-    //     appId: get('PROD_APPINSIGHTS_ID'),
-    //     appKey: get('PROD_APPINSIGHTS_KEY'),
-    //   },
-    // } as Environment,
-  },
+    },
+    {
+      env: EnvType.PREPROD,
+      appInsightsCreds: {
+        appId: get('PREPROD_APPINSIGHTS_ID'),
+        appKey: get('PREPROD_APPINSIGHTS_KEY'),
+      },
+    },
+    {
+      env: EnvType.PROD,
+      appInsightsCreds: {
+        appId: get('PROD_APPINSIGHTS_ID'),
+        appKey: get('PROD_APPINSIGHTS_KEY'),
+      },
+    },
+  ] as Environment[],
 }
 
 export default config
