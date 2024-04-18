@@ -44,4 +44,7 @@ env:
   - name: REDIS_TLS_VERIFICATION
     value: "true"
     
+  - name: PRODUCT_ID
+    value: "DPS000"
+
 {{end -}}
