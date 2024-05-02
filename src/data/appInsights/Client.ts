@@ -1,7 +1,6 @@
 import superagent from 'superagent'
 import { type AppInsightsCreds } from '../../config'
 
-
 type QueryResult = {
   headers: string[]
   rows: string[][]

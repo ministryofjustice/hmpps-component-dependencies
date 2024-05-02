@@ -38,7 +38,10 @@ const run = async () => {
   const componentDependencies = await Promise.all(config.environments.map(environment => calculateDependencies(environment, components)))
 
   logger.info(`Starting to publish dependency info`)
-  await redisService.write(Object.fromEntries(componentDependencies))
+
+  const data = Object.fromEntries(componentDependencies)
+  await redisService.write({ lastUpdated: new Date().toISOString(), ...data })
+
   logger.info(`Finished publishing dependency info`)
 
   await redisClient.quit()

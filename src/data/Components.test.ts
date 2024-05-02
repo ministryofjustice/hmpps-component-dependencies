@@ -97,4 +97,51 @@ describe('Components', () => {
       expect(node.knownDependencies).toStrictEqual({})
     }
   })
+
+  test('map with one way dependency between one known components and one unknown component by cloud role name', () => {
+    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
+
+    const components = new Components([component1])
+
+    const map = components.buildComponentMap([{ componentName: component1.cloudRoleName, type: 'http', dependencyHostname: 'http://some-unknown' }])
+
+    {
+      const node = map[component1.name]
+
+      expect(node.component).toStrictEqual(component1)
+      expect(node.unknownDependencies).toStrictEqual([{ componentName: 'comp1', dependencyHostname: 'http://some-unknown', type: 'http' }])
+      expect(node.reliedUponBy).toStrictEqual({})
+      expect(node.dependencyCategories).toStrictEqual(['HTTP'])
+      expect(node.knownDependencies).toStrictEqual({})
+    }
+  })
+
+  test('map with one way dependency between one known components when looking up based on cloud role name', () => {
+    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
+    const component2: Component = { name: 'comp-2', cloudRoleName: 'comp2', environments: [{ name: 'dev', url: 'http://component2' }] }
+
+    const components = new Components([component1, component2])
+
+    const map = components.buildComponentMap([{ componentName: component2.cloudRoleName, type: 'http', dependencyHostname: 'http://component1' }])
+
+    {
+      const node = map[component1.name]
+
+      expect(node.component).toStrictEqual(component1)
+      expect(node.unknownDependencies).toStrictEqual([])
+      expect(node.reliedUponBy[component2.name].component).toStrictEqual(component2)
+      expect(node.dependencyCategories).toStrictEqual([])
+      expect(node.knownDependencies).toStrictEqual({})
+    }
+
+    {
+      const node = map[component2.name]
+
+      expect(node.component).toStrictEqual(component2)
+      expect(node.unknownDependencies).toStrictEqual([])
+      expect(node.reliedUponBy).toStrictEqual({})
+      expect(node.dependencyCategories).toStrictEqual(['HTTP'])
+      expect(node.knownDependencies[component1.name].component).toStrictEqual(component1)
+    }
+  })
 })

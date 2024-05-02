@@ -9,7 +9,7 @@ spec:
   concurrencyPolicy: Replace
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 43200
-  successfulJobsHistoryLimit: 5
+  successfulJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:

@@ -33,8 +33,17 @@ export class Components {
       return acc
     }, {} as ComponentMap)
 
+    const cloudRoleNameLookup = this.components.reduce((acc, component) => {
+      acc[component.cloudRoleName] = component.name
+      return acc
+    }, {} as Record<string, string>)
+
+    const lookUpComponentName = (name: string) => cloudRoleNameLookup[name] || name
+
     dependencies.forEach(dependency => {
-      const { componentName, dependencyHostname } = dependency
+      const { componentName: cloudRoleName, dependencyHostname } = dependency
+      const componentName = lookUpComponentName(cloudRoleName)
+
       const componentNode = componentMap[componentName] || new ComponentNode(componentName, undefined)
       const dependentComponent = this.getComponentForHostname(dependencyHostname)
       if (dependentComponent) {
