@@ -10,7 +10,7 @@ env:
         name: {{ template "app.name" . }}
         key: APPINSIGHTS_INSTRUMENTATIONKEY
 
-  - name: APPINSIGHTS_INSTRUMENTATIONKEY
+  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     value: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
 
 {{range .Values.appinsightEnvs }}
