@@ -1,4 +1,4 @@
-import initialiseAppInsights from './utils/appInsights'
+import initialiseAppInsights, { flush } from './utils/appInsights'
 import applicationInfo from './utils/applicationInfo'
 
 import config, { type Environment } from './config'
@@ -45,9 +45,11 @@ const run = async () => {
   logger.info(`Finished publishing dependency info`)
 
   await redisClient.quit()
+  await flush()
 }
 
-run().catch(e => {
+run().catch(async e => {
   logger.error(e)
+  await flush()
   process.exit(1)
 })

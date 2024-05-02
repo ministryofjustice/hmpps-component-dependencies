@@ -2,7 +2,7 @@
 # Per environment values which override defaults in hmpps-component-dependencies/values.yaml
 
 redis:
-  secretName: elasticache-redis-dev
+  secretName: elasticache-redis
 
 apis:
   serviceCatalogue:
