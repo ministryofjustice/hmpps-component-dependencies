@@ -33,10 +33,13 @@ export class Components {
       return acc
     }, {} as ComponentMap)
 
-    const cloudRoleNameLookup = this.components.reduce((acc, component) => {
-      acc[component.cloudRoleName] = component.name
-      return acc
-    }, {} as Record<string, string>)
+    const cloudRoleNameLookup = this.components.reduce(
+      (acc, component) => {
+        acc[component.cloudRoleName] = component.name
+        return acc
+      },
+      {} as Record<string, string>,
+    )
 
     const lookUpComponentName = (name: string) => cloudRoleNameLookup[name] || name
 
