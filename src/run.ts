@@ -40,7 +40,7 @@ const run = async () => {
   logger.info(`Starting to publish dependency info`)
 
   const data = Object.fromEntries(componentDependencies)
-  await redisService.write({ lastUpdated: new Date().toISOString(), ...data })
+  await redisService.write(data)
 
   logger.info(`Finished publishing dependency info`)
 
