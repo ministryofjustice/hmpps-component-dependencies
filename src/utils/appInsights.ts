@@ -15,7 +15,7 @@ export default function initialiseAppInsights({ applicationName, buildNumber }: 
 }
 
 export async function flush(): Promise<void> {
-  if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
+  if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
     await defaultClient.flush()
   }
 }
