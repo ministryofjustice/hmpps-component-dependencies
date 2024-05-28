@@ -3,19 +3,31 @@ import gatherDependencyInfo from './dependency-info-gatherer'
 
 describe('DependencyInfoGatherer', () => {
   test('simple example', () => {
-    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
-    const component2: Component = { name: 'comp-2', cloudRoleName: 'comp2', environments: [{ name: 'dev', url: 'http://component2' }] }
-    const component3: Component = { name: 'comp-3', cloudRoleName: 'comp3', environments: [{ name: 'dev', url: 'http://component3' }] }
+    const component1: Component = {
+      name: 'comp-1',
+      cloudRoleName: 'comp1',
+      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+    }
+    const component2: Component = {
+      name: 'comp-2',
+      cloudRoleName: 'comp2',
+      environments: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+    }
+    const component3: Component = {
+      name: 'comp-3',
+      cloudRoleName: 'comp3',
+      environments: [{ name: 'dev', hostname: 'http://component3', clusterHostname: 'comp3.comp3-dev.svc.cluster.local' }],
+    }
 
     const components = new Components([component1, component2, component3])
 
     const map = components.buildComponentMap([
-      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].url },
+      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].hostname },
       { componentName: component1.name, dependencyHostname: 'http://some-unknown', type: 'http' },
-      { componentName: component2.name, type: 'http', dependencyHostname: component1.environments[0].url },
-      { componentName: component3.name, type: 'http', dependencyHostname: component1.environments[0].url },
+      { componentName: component2.name, type: 'http', dependencyHostname: component1.environments[0].hostname },
+      { componentName: component3.name, type: 'http', dependencyHostname: component1.environments[0].hostname },
       { componentName: component3.name, type: 'another-category-type', dependencyHostname: 'aaaaaaa' },
-      { componentName: 'component-not-in-service-catalogue', type: 'http', dependencyHostname: component1.environments[0].url },
+      { componentName: 'component-not-in-service-catalogue', type: 'http', dependencyHostname: component1.environments[0].hostname },
       { componentName: 'missing-service-1', dependencyHostname: 'http://some-unknown.service.justice.gov.uk', type: 'http' },
       { componentName: component1.name, type: 'http', dependencyHostname: 'http://gotenberg' },
     ])

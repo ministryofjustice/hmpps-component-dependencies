@@ -2,13 +2,19 @@ import type { Dependency, ComponentMap } from './data/Components'
 
 type DependencyReference = { name: string; type: string }
 type Dependent = { name: string; isKnownComponent: boolean }
-type DependencyInfo = {
+type ComponentInfo = {
   dependencies: {
     components: string[]
     categories: string[]
     other: DependencyReference[]
   }
   dependents: Dependent[]
+}
+
+export type DependencyInfo = {
+  categoryToComponent: Record<string, string[]>
+  componentDependencyInfo: Record<string, ComponentInfo>
+  missingServices: string[]
 }
 
 const buildMissingComponents = (components: ComponentMap) => {
@@ -38,7 +44,7 @@ const buildCategoryToComponent = (components: ComponentMap): Record<string, stri
   )
 }
 
-const buildComponentInfo = (componentMap: ComponentMap): Record<string, DependencyInfo> => {
+const buildComponentInfo = (componentMap: ComponentMap): Record<string, ComponentInfo> => {
   return Object.entries(componentMap).reduce(
     (acc, [componentName, node]) => {
       const components = Object.keys(node.knownDependencies).map(name => name)
@@ -52,11 +58,11 @@ const buildComponentInfo = (componentMap: ComponentMap): Record<string, Dependen
       acc[componentName] = { dependencies: { components, categories, other }, dependents }
       return acc
     },
-    {} as Record<string, DependencyInfo>,
+    {} as Record<string, ComponentInfo>,
   )
 }
 
-const gatherDependencyInfo = (components: ComponentMap) => {
+const gatherDependencyInfo = (components: ComponentMap): DependencyInfo => {
   const categoryToComponent = buildCategoryToComponent(components)
   const missingComponents = buildMissingComponents(components)
   const componentDependencyInfo = buildComponentInfo(components)

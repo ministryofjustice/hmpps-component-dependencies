@@ -1,8 +1,8 @@
 import initialiseAppInsights, { flush } from './utils/appInsights'
 import applicationInfo from './utils/applicationInfo'
 
-import config, { type Environment } from './config'
-import gatherDependencyInfo from './dependency-info-gatherer'
+import config, { EnvType, type Environment } from './config'
+import gatherDependencyInfo, { type DependencyInfo } from './dependency-info-gatherer'
 import getComponents from './data/serviceCatalogue'
 import getDependencies from './data/appInsights'
 import { createRedisClient } from './data/redis/redisClient'
@@ -12,7 +12,7 @@ import { type Components } from './data/Components'
 
 initialiseAppInsights(applicationInfo())
 
-const calculateDependencies = async ({ env, appInsightsCreds }: Environment, components: Components) => {
+const calculateDependencies = async ({ env, appInsightsCreds }: Environment, components: Components): Promise<[EnvType, DependencyInfo]> => {
   const dependencies = await getDependencies(appInsightsCreds)
   const componentMap = components.buildComponentMap(dependencies)
   const { categoryToComponent, componentDependencyInfo, missingServices } = gatherDependencyInfo(componentMap)
@@ -40,6 +40,7 @@ const run = async () => {
   logger.info(`Starting to publish dependency info`)
 
   const data = Object.fromEntries(componentDependencies)
+
   await redisService.write(data)
 
   logger.info(`Finished publishing dependency info`)

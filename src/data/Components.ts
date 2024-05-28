@@ -3,7 +3,7 @@ import ComponentNode from '../component-node'
 export type Component = {
   name: string
   cloudRoleName: string
-  environments: { name: string; url: string }[]
+  environments: { name: string; hostname: string; clusterHostname: string }[]
 }
 
 // A relationship between a component and something else
@@ -18,7 +18,10 @@ export class Components {
     this.componentLookup = Object.fromEntries(
       components.flatMap((component: Component) => {
         const { environments } = component
-        return environments.map(env => [env.url, component])
+        return environments.flatMap(env => [
+          [env.hostname, component],
+          [env.clusterHostname, component],
+        ])
       }),
     )
   }

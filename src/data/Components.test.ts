@@ -2,12 +2,61 @@ import { Component, Components } from './Components'
 
 describe('Components', () => {
   test('one way dependency between two known components', () => {
-    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
-    const component2: Component = { name: 'comp-2', cloudRoleName: 'comp2', environments: [{ name: 'dev', url: 'http://component2' }] }
+    const component1: Component = {
+      name: 'comp-1',
+      cloudRoleName: 'comp1',
+      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+    }
+    const component2: Component = {
+      name: 'comp-2',
+      cloudRoleName: 'comp2',
+      environments: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+    }
 
     const components = new Components([component1, component2])
 
-    const map = components.buildComponentMap([{ componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].url }])
+    const map = components.buildComponentMap([
+      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].hostname },
+    ])
+
+    {
+      const node = map[component1.name]
+
+      expect(node.component).toStrictEqual(component1)
+      expect(node.unknownDependencies).toStrictEqual([])
+      expect(node.reliedUponBy).toStrictEqual({})
+      expect(node.dependencyCategories).toStrictEqual(['HTTP'])
+      expect(node.knownDependencies[component2.name].component).toStrictEqual(component2)
+    }
+
+    {
+      const node = map[component2.name]
+
+      expect(node.component).toStrictEqual(component2)
+      expect(node.unknownDependencies).toStrictEqual([])
+      expect(node.reliedUponBy[component1.name].component).toStrictEqual(component1)
+      expect(node.dependencyCategories).toStrictEqual([])
+      expect(node.knownDependencies).toStrictEqual({})
+    }
+  })
+
+  test('one way dependency between two known components using cluster hostname', () => {
+    const component1: Component = {
+      name: 'comp-1',
+      cloudRoleName: 'comp1',
+      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+    }
+    const component2: Component = {
+      name: 'comp-2',
+      cloudRoleName: 'comp2',
+      environments: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+    }
+
+    const components = new Components([component1, component2])
+
+    const map = components.buildComponentMap([
+      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].clusterHostname },
+    ])
 
     {
       const node = map[component1.name]
@@ -31,14 +80,22 @@ describe('Components', () => {
   })
 
   test('two way dependency between two known components', () => {
-    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
-    const component2: Component = { name: 'comp-2', cloudRoleName: 'comp2', environments: [{ name: 'dev', url: 'http://component2' }] }
+    const component1: Component = {
+      name: 'comp-1',
+      cloudRoleName: 'comp1',
+      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+    }
+    const component2: Component = {
+      name: 'comp-2',
+      cloudRoleName: 'comp2',
+      environments: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+    }
 
     const components = new Components([component1, component2])
 
     const map = components.buildComponentMap([
-      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].url },
-      { componentName: component2.name, type: 'http', dependencyHostname: component1.environments[0].url },
+      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].hostname },
+      { componentName: component2.name, type: 'http', dependencyHostname: component1.environments[0].hostname },
     ])
 
     {
@@ -63,7 +120,11 @@ describe('Components', () => {
   })
 
   test('map with one way dependency between one known components and one unknown component', () => {
-    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
+    const component1: Component = {
+      name: 'comp-1',
+      cloudRoleName: 'comp1',
+      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+    }
 
     const components = new Components([component1])
 
@@ -81,7 +142,11 @@ describe('Components', () => {
   })
 
   test('Component with Gotenberg', () => {
-    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
+    const component1: Component = {
+      name: 'comp-1',
+      cloudRoleName: 'comp1',
+      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+    }
 
     const components = new Components([component1])
 
@@ -99,7 +164,11 @@ describe('Components', () => {
   })
 
   test('map with one way dependency between one known components and one unknown component by cloud role name', () => {
-    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
+    const component1: Component = {
+      name: 'comp-1',
+      cloudRoleName: 'comp1',
+      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+    }
 
     const components = new Components([component1])
 
@@ -117,8 +186,16 @@ describe('Components', () => {
   })
 
   test('map with one way dependency between one known components when looking up based on cloud role name', () => {
-    const component1: Component = { name: 'comp-1', cloudRoleName: 'comp1', environments: [{ name: 'dev', url: 'http://component1' }] }
-    const component2: Component = { name: 'comp-2', cloudRoleName: 'comp2', environments: [{ name: 'dev', url: 'http://component2' }] }
+    const component1: Component = {
+      name: 'comp-1',
+      cloudRoleName: 'comp1',
+      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+    }
+    const component2: Component = {
+      name: 'comp-2',
+      cloudRoleName: 'comp2',
+      environments: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+    }
 
     const components = new Components([component1, component2])
 

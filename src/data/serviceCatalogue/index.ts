@@ -8,12 +8,13 @@ const getComponents = async (serviceCatalogHostName: string) => {
     .filter(component => component.environments?.length)
     .map(entry => ({
       name: entry.name,
-      cloudRoleName: entry.cloudRoleName,
+      cloudRoleName: entry.app_insights_cloud_role_name,
       environments: entry.environments
         .filter(env => env.url)
         .map(env => ({
           name: env.name,
-          url: env.url.replace('https://', ''),
+          hostname: env.url.replace('https://', ''),
+          clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
         })),
     }))
   return new Components(filteredComponents)
