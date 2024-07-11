@@ -21,6 +21,8 @@ export class Components {
         return environments.flatMap(env => [
           [env.hostname, component],
           [env.clusterHostname, component],
+        ]).concat([
+          [component.cloudRoleName, component],
         ])
       }),
     )
