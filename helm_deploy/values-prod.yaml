@@ -7,3 +7,6 @@ redis:
 apis:
   serviceCatalogue:
     url: https://service-catalogue.hmpps.service.justice.gov.uk
+
+generic-prometheus-alerts:
+  alertSeverity: hmpps-sre-alerts-prod
