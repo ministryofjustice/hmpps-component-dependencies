@@ -29,6 +29,12 @@ env:
   - name: SERVICE_CATALOGUE_URL
     value: {{ .Values.apis.serviceCatalogue.url | quote }}
 
+  - name: SERVICE_CATALOGUE_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" $ }}
+        key: SERVICE_CATALOGUE_TOKEN
+
   - name: REDIS_HOST
     valueFrom:
       secretKeyRef:
