@@ -22,7 +22,11 @@ describe('dependency categoriser', () => {
   })
 
   test('awsService', () => {
-    const category = categorise({ componentName: 'comp', type: 'http', dependencyHostname: 'some.dynamodb.amazonaws.com:123' })
+    const category = categorise({
+      componentName: 'comp',
+      type: 'http',
+      dependencyHostname: 'some.dynamodb.amazonaws.com:123',
+    })
     expect(category).toStrictEqual('DYNOMODB')
   })
 })

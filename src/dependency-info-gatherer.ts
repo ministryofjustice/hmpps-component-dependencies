@@ -53,7 +53,10 @@ const buildComponentInfo = (componentMap: ComponentMap): Record<string, Componen
         type,
       }))
       const categories = node.dependencyCategories.map(name => name)
-      const dependents = Object.values(node.reliedUponBy).map(({ name, component }) => ({ name, isKnownComponent: Boolean(component) }))
+      const dependents = Object.values(node.reliedUponBy).map(({ name, component }) => ({
+        name,
+        isKnownComponent: Boolean(component),
+      }))
 
       acc[componentName] = { dependencies: { components, categories, other }, dependents }
       return acc

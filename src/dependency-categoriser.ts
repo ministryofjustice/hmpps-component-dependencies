@@ -30,6 +30,7 @@ type Categorisation = [category: string, check: Rule]
 const categories: Categorisation[] = [
   ['DB', typeIncludes('postgres', 'sql')],
   ['REDIS', typeIncludes('redis')],
+  ['MESSAGING', typeIncludes('messaging')],
   ['SNS', awsResource('sns')],
   ['SQS', awsResource('sqs')],
   ['STS', awsResource('sts')],
@@ -49,6 +50,7 @@ const categories: Categorisation[] = [
   ['HTTP', typeIncludes('http', 'component')],
 ]
 
-const categorise = (dependency: Dependency) => categories.find(category => category[1](dependency))?.[0] || dependency.type
+const categorise = (dependency: Dependency) =>
+  categories.find(category => category[1](dependency))?.[0] || dependency.type
 
 export default categorise

@@ -12,14 +12,19 @@ import { type Components } from './data/Components'
 
 initialiseAppInsights(applicationInfo())
 
-const calculateDependencies = async ({ env, appInsightsCreds }: Environment, components: Components): Promise<[EnvType, DependencyInfo]> => {
+const calculateDependencies = async (
+  { env, appInsightsCreds }: Environment,
+  components: Components,
+): Promise<[EnvType, DependencyInfo]> => {
   const dependencies = await getDependencies(appInsightsCreds)
   const componentMap = components.buildComponentMap(dependencies)
   const { categoryToComponent, componentDependencyInfo, missingServices } = gatherDependencyInfo(componentMap)
 
   logger.info(`${env}: Services missing from service catalogue: \n\t${missingServices.join('\n\t')}`)
 
-  const categoryCounts = Object.entries(categoryToComponent).map(([category, comps]) => `${category} =>  ${comps.length}`)
+  const categoryCounts = Object.entries(categoryToComponent).map(
+    ([category, comps]) => `${category} =>  ${comps.length}`,
+  )
   logger.info(`${env}: Category freqs: \n${categoryCounts.join('\n')}`)
 
   return [env, { categoryToComponent, componentDependencyInfo, missingServices }]
@@ -33,9 +38,11 @@ const run = async () => {
 
   logger.info(`Starting to gather dependency info`)
 
-  const components = await getComponents(config.serviceCatalogueUrl)
+  const components = await getComponents()
 
-  const componentDependencies = await Promise.all(config.environments.map(environment => calculateDependencies(environment, components)))
+  const componentDependencies = await Promise.all(
+    config.environments.map(environment => calculateDependencies(environment, components)),
+  )
 
   logger.info(`Starting to publish dependency info`)
 

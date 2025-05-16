@@ -1,4 +1,6 @@
-import superagent from 'superagent'
+import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
+import logger from '../../utils/logger'
+import config from '../../config'
 
 export type ServiceCatalogueComponent = {
   name: string
@@ -8,13 +10,18 @@ export type ServiceCatalogueComponent = {
 
 type App = { attributes: ServiceCatalogueComponent }
 
-export default class ServiceCatalogue {
-  constructor(private readonly hostName: string) {}
+type ServiceCatalogueResponse = { data: App[] }
 
-  async getComponents(): Promise<ServiceCatalogueComponent[]> {
-    return superagent
-      .get(`${this.hostName}/v1/components?populate=environments`)
-      .set('Accept', 'application/json')
-      .then(res => res.body.data.map((app: App) => app.attributes))
+export class Client extends RestClient {
+  constructor() {
+    super('service-catalogue', config.serviceCatalogue, logger, { getToken: async () => config.serviceCatalogue.token })
+  }
+
+  async getComponents() {
+    const response = await this.get<ServiceCatalogueResponse>(
+      { path: '/v1/components?populate=environments' },
+      asSystem(),
+    )
+    return response.data.map((app: App) => app.attributes)
   }
 }
