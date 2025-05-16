@@ -18,12 +18,12 @@ export class Components {
     this.componentLookup = Object.fromEntries(
       components.flatMap((component: Component) => {
         const { environments } = component
-        return environments.flatMap(env => [
-          [env.hostname, component],
-          [env.clusterHostname, component],
-        ]).concat([
-          [component.cloudRoleName, component],
-        ])
+        return environments
+          .flatMap(env => [
+            [env.hostname, component],
+            [env.clusterHostname, component],
+          ])
+          .concat([[component.cloudRoleName, component]])
       }),
     )
   }

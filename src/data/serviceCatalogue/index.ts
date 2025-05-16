@@ -1,8 +1,8 @@
-import ServiceCatalogueClient from './Client'
+import { Client } from './Client'
 import { Components } from '../Components'
 
-const getComponents = async (serviceCatalogHostName: string) => {
-  const client = new ServiceCatalogueClient(serviceCatalogHostName)
+const getComponents = async () => {
+  const client = new Client()
   const components = await client.getComponents()
   const filteredComponents = components
     .filter(component => component.environments?.length)

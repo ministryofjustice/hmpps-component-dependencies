@@ -5,7 +5,9 @@ import logger from '../../utils/logger'
 export type RedisClient = ReturnType<typeof createClient>
 
 const url =
-  config.redis.tlsEnabled === 'true' ? `rediss://${config.redis.host}:${config.redis.port}` : `redis://${config.redis.host}:${config.redis.port}`
+  config.redis.tlsEnabled === 'true'
+    ? `rediss://${config.redis.host}:${config.redis.port}`
+    : `redis://${config.redis.host}:${config.redis.port}`
 
 const tlsVerification = config.redis.tlsVerification === 'true'
 

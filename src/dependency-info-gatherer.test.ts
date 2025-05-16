@@ -6,17 +6,23 @@ describe('DependencyInfoGatherer', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
-      environments: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+      environments: [
+        { name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' },
+      ],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
-      environments: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+      environments: [
+        { name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' },
+      ],
     }
     const component3: Component = {
       name: 'comp-3',
       cloudRoleName: 'comp3',
-      environments: [{ name: 'dev', hostname: 'http://component3', clusterHostname: 'comp3.comp3-dev.svc.cluster.local' }],
+      environments: [
+        { name: 'dev', hostname: 'http://component3', clusterHostname: 'comp3.comp3-dev.svc.cluster.local' },
+      ],
     }
 
     const components = new Components([component1, component2, component3])
@@ -27,8 +33,16 @@ describe('DependencyInfoGatherer', () => {
       { componentName: component2.name, type: 'http', dependencyHostname: component1.environments[0].hostname },
       { componentName: component3.name, type: 'http', dependencyHostname: component1.environments[0].hostname },
       { componentName: component3.name, type: 'another-category-type', dependencyHostname: 'aaaaaaa' },
-      { componentName: 'component-not-in-service-catalogue', type: 'http', dependencyHostname: component1.environments[0].hostname },
-      { componentName: 'missing-service-1', dependencyHostname: 'http://some-unknown.service.justice.gov.uk', type: 'http' },
+      {
+        componentName: 'component-not-in-service-catalogue',
+        type: 'http',
+        dependencyHostname: component1.environments[0].hostname,
+      },
+      {
+        componentName: 'missing-service-1',
+        dependencyHostname: 'http://some-unknown.service.justice.gov.uk',
+        type: 'http',
+      },
       { componentName: component1.name, type: 'http', dependencyHostname: 'http://gotenberg' },
     ])
 
@@ -42,7 +56,11 @@ describe('DependencyInfoGatherer', () => {
       },
       componentDependencyInfo: {
         'comp-1': {
-          dependencies: { components: ['comp-2'], categories: ['HTTP', 'GOTENBERG'], other: [{ name: 'http://some-unknown', type: 'http' }] },
+          dependencies: {
+            components: ['comp-2'],
+            categories: ['HTTP', 'GOTENBERG'],
+            other: [{ name: 'http://some-unknown', type: 'http' }],
+          },
           dependents: [
             { name: 'comp-2', isKnownComponent: true },
             { name: 'comp-3', isKnownComponent: true },
@@ -62,7 +80,11 @@ describe('DependencyInfoGatherer', () => {
           dependents: [],
         },
         'missing-service-1': {
-          dependencies: { components: [], categories: ['HTTP'], other: [{ name: 'http://some-unknown.service.justice.gov.uk', type: 'http' }] },
+          dependencies: {
+            components: [],
+            categories: ['HTTP'],
+            other: [{ name: 'http://some-unknown.service.justice.gov.uk', type: 'http' }],
+          },
           dependents: [],
         },
       },
