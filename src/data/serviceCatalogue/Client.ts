@@ -18,10 +18,7 @@ export class Client extends RestClient {
   }
 
   async getComponents() {
-    const response = await this.get<ServiceCatalogueResponse>(
-      { path: '/v1/components?populate=environments' },
-      asSystem(),
-    )
+    const response = await this.get<ServiceCatalogueResponse>({ path: '/v1/components?populate=envs' }, asSystem())
     return response.data.map((app: App) => app.attributes)
   }
 }
