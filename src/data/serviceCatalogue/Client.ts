@@ -5,7 +5,7 @@ import config from '../../config'
 export type ServiceCatalogueComponent = {
   name: string
   app_insights_cloud_role_name: string
-  envs: { name: string; url: string; namespace: string }[]
+  envs?: { data?: { attributes: { name: string; url: string; namespace: string } }[] }
 }
 
 type App = { attributes: ServiceCatalogueComponent }
