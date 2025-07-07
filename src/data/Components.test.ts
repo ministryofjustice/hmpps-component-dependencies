@@ -5,22 +5,18 @@ describe('Components', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
-      environments: [
-        { name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
-      environments: [
-        { name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
     }
 
     const components = new Components([component1, component2])
 
     const map = components.buildComponentMap([
-      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].hostname },
+      { componentName: component1.name, type: 'http', dependencyHostname: component2.envs[0].hostname },
     ])
 
     {
@@ -48,22 +44,18 @@ describe('Components', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
-      environments: [
-        { name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
-      environments: [
-        { name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
     }
 
     const components = new Components([component1, component2])
 
     const map = components.buildComponentMap([
-      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].clusterHostname },
+      { componentName: component1.name, type: 'http', dependencyHostname: component2.envs[0].clusterHostname },
     ])
 
     {
@@ -91,23 +83,19 @@ describe('Components', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
-      environments: [
-        { name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
-      environments: [
-        { name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
     }
 
     const components = new Components([component1, component2])
 
     const map = components.buildComponentMap([
-      { componentName: component1.name, type: 'http', dependencyHostname: component2.environments[0].hostname },
-      { componentName: component2.name, type: 'http', dependencyHostname: component1.environments[0].hostname },
+      { componentName: component1.name, type: 'http', dependencyHostname: component2.envs[0].hostname },
+      { componentName: component2.name, type: 'http', dependencyHostname: component1.envs[0].hostname },
     ])
 
     {
@@ -135,9 +123,7 @@ describe('Components', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
-      environments: [
-        { name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
     }
 
     const components = new Components([component1])
@@ -163,9 +149,7 @@ describe('Components', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
-      environments: [
-        { name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
     }
 
     const components = new Components([component1])
@@ -189,9 +173,7 @@ describe('Components', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
-      environments: [
-        { name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
     }
 
     const components = new Components([component1])
@@ -217,16 +199,12 @@ describe('Components', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
-      environments: [
-        { name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
-      environments: [
-        { name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' },
-      ],
+      envs: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
     }
 
     const components = new Components([component1, component2])
