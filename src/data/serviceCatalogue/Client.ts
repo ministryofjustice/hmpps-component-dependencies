@@ -5,12 +5,10 @@ import config from '../../config'
 export type ServiceCatalogueComponent = {
   name: string
   app_insights_cloud_role_name: string
-  envs?: { data?: { attributes: { name: string; url: string; namespace: string } }[] }
+  envs?: { name: string; url: string; namespace: string } [] 
 }
 
-type App = { attributes: ServiceCatalogueComponent }
-
-type ServiceCatalogueResponse = { data: App[] }
+type ServiceCatalogueResponse = { data: ServiceCatalogueComponent[] }
 
 export class Client extends RestClient {
   constructor() {
@@ -18,7 +16,7 @@ export class Client extends RestClient {
   }
 
   async getComponents() {
-    const response = await this.get<ServiceCatalogueResponse>({ path: '/v1/components?populate=envs' }, asSystem())
-    return response.data.map((app: App) => app.attributes)
+    const response = await this.get<ServiceCatalogueResponse>({ path: '/v1/components?populate[envs]=true' }, asSystem())
+    return response.data.map((app: ServiceCatalogueComponent) => app.name)
   }
 }
