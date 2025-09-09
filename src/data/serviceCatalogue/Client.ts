@@ -5,7 +5,7 @@ import config from '../../config'
 export type ServiceCatalogueComponent = {
   name: string
   app_insights_cloud_role_name: string
-  envs?: { name: string; url: string; namespace: string } [] 
+  envs?: { name: string; url: string; namespace: string }[]
 }
 
 type ServiceCatalogueResponse = { data: ServiceCatalogueComponent[] }
@@ -16,7 +16,10 @@ export class Client extends RestClient {
   }
 
   async getComponents() {
-    const response = await this.get<ServiceCatalogueResponse>({ path: '/v1/components?populate[envs]=true' }, asSystem())
-    return response.data.map((app: ServiceCatalogueComponent) => app.name)
+    const response = await this.get<ServiceCatalogueResponse>(
+      { path: '/v1/components?populate[envs]=true' },
+      asSystem(),
+    )
+    return response.data
   }
 }
