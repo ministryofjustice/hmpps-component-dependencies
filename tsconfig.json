@@ -1,17 +1,17 @@
 {
-    "extends": "@tsconfig/node22/tsconfig.json",
-    "compileOnSave": true,
-    "compilerOptions": {
-      "isolatedModules": true,
-      "outDir": "./dist",
-      "sourceMap": true,
-      "noEmit": false,
-      "allowJs": false,
-      "strict": false,
-      "resolveJsonModule": true,
-      "allowSyntheticDefaultImports": true,
-      "noImplicitAny": true,
-      "experimentalDecorators": true,
-    },
-    "exclude": ["node_modules", "dist"],
-  }
+  "extends": "@tsconfig/node24/tsconfig.json",
+  "compileOnSave": true,
+  "compilerOptions": {
+    "isolatedModules": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "noEmit": false,
+    "allowJs": false,
+    "strict": false,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true
+  },
+  "exclude": ["node_modules", "dist"]
+}
