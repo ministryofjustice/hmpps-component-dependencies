@@ -7,3 +7,7 @@ appinsightEnvs: ["DEV", "PREPROD", "PROD"]
 
 cronjobs:
   updateDependencyInfo: 0 */6 * * *
+
+generic-prometheus-alerts:
+  targetApplication: hmpps-component-dependencies
+  ingressAlertsEnabled: false
