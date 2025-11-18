@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"  
+    directory: "/"        
+    schedule:
+      interval: "weekly"  
+  - package-ecosystem: "github-actions"
+    directory: "/.github"  
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "helm"
+    directory: "/helm_deploy/hmpps-component-dependencies"  
+    schedule:
+      interval: "weekly"
+    
