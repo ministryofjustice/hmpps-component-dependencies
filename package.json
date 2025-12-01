@@ -71,7 +71,7 @@
   "devDependencies": {
     "@ministryofjustice/eslint-config-hmpps": "^1.0.0",
     "@ministryofjustice/hmpps-precommit-hooks": "^1.0.2",
-    "@tsconfig/node24": "^24.0.1",
+    "@tsconfig/node24": "^24.0.3",
     "@types/jest": "^30.0.0",
     "@types/superagent": "^8.1.9",
     "audit-ci": "^7.1.0",
