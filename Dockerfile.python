@@ -1,10 +1,5 @@
 FROM ghcr.io/ministryofjustice/hmpps-python:python3.13-alpine AS base
 
-# dependencies
-COPY includes includes
-COPY processes processes
-COPY utilities utilities
-
 # initialise uv
 COPY pyproject.toml .
 RUN uv sync
