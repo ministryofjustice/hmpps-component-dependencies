@@ -19,7 +19,7 @@ spec:
           containers:
           - name: hmpps-component-dependencies
             image: {{ .Values.imagePython.repository }}:{{ .Values.imagePython.tag }}
-            command: ["uv", "run", "python", "-u", "/app/component_dependencies_discovery.py"]
+            command: ["uv", "run", "python", "-u", "/app/components_dependencies_discovery.py"]
             securityContext:
               capabilities:
                 drop:

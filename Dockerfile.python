@@ -7,4 +7,4 @@ RUN uv sync
 # Copy the Python goodness
 COPY ./*.py .
 
-CMD [ "uv", "run", "python", "-u", "Dcomponent_dependencies_discovery.py" ]
+CMD [ "uv", "run", "python", "-u", "components_dependencies_discovery.py" ]
