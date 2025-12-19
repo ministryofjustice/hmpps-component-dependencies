@@ -1,6 +1,3 @@
-{{- if .Values.discoveryCronJob.enabled -}}
-
----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -8,7 +5,7 @@ metadata:
   labels:
     {{- include "app.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.cronjobs.updateDependencyInfo }}
+  schedule: {{ .Values.cronjobs.componentDependencyDiscovery }}
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 600
@@ -21,7 +18,7 @@ spec:
         spec:
           containers:
           - name: hmpps-component-dependencies
-            image: {{ .Values.image-python.repository }}:{{ .Values.image-python.tag }}
+            image: {{ .Values.imagePython.repository }}:{{ .Values.imagePython.tag }}
             command: ["uv", "run", "python", "-u", "/app/component_dependencies_discovery.py"]
             securityContext:
               capabilities:
@@ -31,6 +28,5 @@ spec:
               allowPrivilegeEscalation: false
               seccompProfile:
                 type: RuntimeDefault
-  {{ include "deployment.envs" . | nindent 12 }}
+{{ include "deployment.envs" . | nindent 12 }}
           restartPolicy: Never
-{{- end }}
