@@ -3,6 +3,10 @@ image:
   repository: ghcr.io/ministryofjustice/hmpps-component-dependencies
   tag: latest
 
+image-python:
+  repository: ghcr.io/ministryofjustice/hmpps-component-dependencies-python
+  tag: latest
+  
 appinsightEnvs: ["DEV", "PREPROD", "PROD"]
 
 cronjobs:
