@@ -1,10 +1,11 @@
 FROM ghcr.io/ministryofjustice/hmpps-python:python3.13-alpine AS base
 
 # initialise uv
-COPY pyproject.toml .
+COPY scripts/pyproject.toml .
+COPY scripts/uv.lock .
 RUN uv sync
 
 # Copy the Python goodness
-COPY ./*.py .
+COPY scripts/*.py .
 
 CMD [ "uv", "run", "python", "-u", "components_dependencies_discovery.py" ]
