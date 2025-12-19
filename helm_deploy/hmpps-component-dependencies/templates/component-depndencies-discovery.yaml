@@ -6,7 +6,7 @@ kind: CronJob
 metadata:
   name: hmpps-component-dependencies-discovery
 spec:
-  schedule: "{{ .Values.discoveryCronJob.cron.github_discovery }}"
+  schedule: "{{ .Values.discoveryCronJob.cron.component_dependency_discovery }}"
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 600
