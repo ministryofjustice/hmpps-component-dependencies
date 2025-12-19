@@ -1,0 +1,13 @@
+[project]
+name = "hmpps-component-dependencies"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "hmpps-sre-python-lib",
+    "redis==7.1.0",
+]
+
+[tool.uv.sources]
+hmpps-sre-python-lib = { url = "https://github.com/ministryofjustice/hmpps-sre-python-lib/releases/download/v0.1.14/hmpps_sre_python_lib-0.1.14-py3-none-any.whl" }

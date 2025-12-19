@@ -10,3 +10,8 @@ apis:
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-sre-alerts-nonprod
+
+discoveryCronJob:
+  enabled: true
+  cron:
+    component_dependency_discovery: "00 00 * * 2-5"
