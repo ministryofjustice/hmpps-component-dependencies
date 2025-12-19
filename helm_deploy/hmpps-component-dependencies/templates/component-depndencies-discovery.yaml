@@ -29,6 +29,6 @@ spec:
                 allowPrivilegeEscalation: false
                 seccompProfile:
                   type: RuntimeDefault
-      {{- include "discoveryCronJob.envs" .Values | nindent 14 }}
+      {{ include "deployment.envs" . | nindent 12 }}
           restartPolicy: Never
 {{- end }}
