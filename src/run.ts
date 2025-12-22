@@ -76,9 +76,11 @@ const run = async () => {
         await componentService.putComponent(documentId, dependent_count)
         logger.info(`Component ${componentName} has ${dependent_count} dependents.`)
       } else {
+        logger.info(`Missing componen details for ${componentName} ${JSON.stringify(matchingComponent)}`)
         logger.warn(`Component with name ${componentName} not found in components list.`)
       }
     }
+    logger.info('Completed updating service catalogue with dependent counts')
   } else {
     logger.warn("No PROD environment found in componentDependencies.")
   }
