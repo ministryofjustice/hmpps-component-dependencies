@@ -1,24 +1,42 @@
 import { Client } from './Client'
 import { Components } from '../Components'
 
-const getComponents = async () => {
-  const client = new Client()
-  const components = await client.getComponents()
-  const filteredComponents = components
-    .filter(component => component.envs?.length)
-    .map(entry => ({
-      name: entry.name,
-      cloudRoleName: entry.app_insights_cloud_role_name,
-      envs: entry.envs
-        .filter(env => env.url)
-        .map(env => ({
-          name: env.name,
-          hostname: env.url.replace('https://', ''),
-          clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
-        })),
-    }))
+class ComponentService {
+  private client: Client
 
-  return new Components(filteredComponents)
+  constructor() {
+    this.client = new Client()
+  }
+  async getComponents(): Promise<Components> {
+    const components = await this.client.getComponents()
+    const filteredComponents = components
+      .filter(component => component.envs?.length)
+      .map(entry => ({
+        documentId: entry.documentId,
+        name: entry.name,
+        cloudRoleName: entry.app_insights_cloud_role_name,
+        envs: entry.envs
+          .filter(env => env.url)
+          .map(env => ({
+            name: env.name,
+            hostname: env.url.replace('https://', ''),
+            clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
+          })),
+      }))
+
+    return new Components(filteredComponents)
+  }
+
+  async putComponent(documentId: string, dependent_count: number){
+    try {
+      const response = await this.client.putComponent({ documentId, dependent_count })
+      return response
+    } catch (error) {
+      console.error(`Failed to update component with documentId ${documentId}:`, error)
+      throw error
+    }
+  }
 }
 
-export default getComponents
+
+export default ComponentService

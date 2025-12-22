@@ -2,7 +2,7 @@ import type { Dependency, ComponentMap } from './data/Components'
 
 type DependencyReference = { name: string; type: string }
 type Dependent = { name: string; isKnownComponent: boolean }
-type ComponentInfo = {
+export type ComponentInfo = {
   dependencies: {
     components: string[]
     categories: string[]
