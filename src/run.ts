@@ -67,7 +67,7 @@ const run = async () => {
       logger.info(`Processing component: ${componentName}`)
       const details = prodDependencies[componentName] || {} as ComponentInfo
       const dependents = details.dependents || []
-      const dependent_count = dependents.length
+      const dependent_count = dependents && dependents.length ? dependents.length : 0
       const matchingComponent = validComponents.find(
         component => component.name === componentName
       )
