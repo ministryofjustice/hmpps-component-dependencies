@@ -71,8 +71,8 @@ const run = async () => {
       const matchingComponent = validComponents.find(
         component => component.name === componentName
       )
-      const documentId = matchingComponent.documentId
-      if (documentId) {
+      if (matchingComponent && matchingComponent.documentId) {
+        const documentId = matchingComponent.documentId
         await componentService.putComponent(documentId, dependent_count)
         logger.info(`Component ${componentName} has ${dependent_count} dependents.`)
       } else {
