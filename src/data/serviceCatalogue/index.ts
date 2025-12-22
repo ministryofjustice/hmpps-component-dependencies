@@ -28,6 +28,7 @@ class ComponentService {
   }
 
   async putComponent(documentId: string, dependent_count: number){
+    console.log(`in index.ts putComponent with documentId: ${documentId} and dependent_count: ${dependent_count}`)
     try {
       const response = await this.client.putComponent({ documentId, dependent_count })
       console.log(`Component with documentId ${documentId} successfully updated with dependent_count: ${dependent_count}`)

@@ -26,9 +26,10 @@ export class Client extends RestClient {
   }
 
   async putComponent({ documentId, dependent_count }: { documentId: string; dependent_count: number }) {
+    console.log(`Updating component ${documentId} with dependent_count ${dependent_count}`)
     const response = await this.put<ServiceCatalogueResponse>({
       path: `/v1/components/${documentId}`,
-      data: { dependent_count: dependent_count },
+      data: { "dependent_count": dependent_count },
     }, asSystem())
     return response.data
   }
