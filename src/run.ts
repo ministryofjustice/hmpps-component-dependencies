@@ -3,6 +3,7 @@ import applicationInfo from './utils/applicationInfo'
 
 import config, { EnvType, type Environment } from './config'
 import gatherDependencyInfo, { type DependencyInfo } from './dependency-info-gatherer'
+import getComponents from './data/serviceCatalogue'
 import { postComponent } from './data/serviceCatalogue'
 import getDependencies from './data/appInsights'
 import { createRedisClient } from './data/redis/redisClient'
@@ -56,7 +57,7 @@ const run = async () => {
   await flush()
 
   logger.info('Updating service catalogue with dependent counts')
-  const prodDependencies = componentDependencies.filter(dep => dep.environment === "PROD")
+  const prodDependencies = componentDependencies.filter(dep => Object.keys(dep).includes("PROD"))
   for (const componentName of Object.keys(prodDependencies)) {
     const details = prodDependencies[componentName] || {}
     const dependents = details.dependents || []
