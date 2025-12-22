@@ -3,7 +3,7 @@ import { Components } from '../Components'
 
 class ComponentService {
   const client = new Client()
-  const getComponents = async () => {
+  async getComponents() {
     const components = await this.client.getComponents()
     const filteredComponents = components
       .filter(component => component.envs?.length)
@@ -22,7 +22,7 @@ class ComponentService {
     return new Components(filteredComponents)
   }
 
-  const postComponent = async (documentId: string, dependent_count: number) => {
+  async postComponent(documentId: string, dependent_count: number){
     try {
       const response = await this.client.postComponent({ documentId, dependent_count })
       console.log(`Component with documentId ${documentId} successfully updated with dependent_count: ${dependent_count}`)
