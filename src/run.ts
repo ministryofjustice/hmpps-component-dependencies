@@ -54,26 +54,35 @@ const run = async () => {
 
   logger.info(`Finished publishing dependency info`)
 
+  logger.info('Updating service catalogue with dependent counts')
+  const prodDependencyTuple = componentDependencies.find(([env]) => env === "PROD")
+  if (prodDependencyTuple) {
+    const [, prodDependencyInfo] = prodDependencyTuple
+    const prodDependencies = prodDependencyInfo.componentDependencyInfo
+  
+    for (const componentName of Object.keys(prodDependencies)) {
+      const details = prodDependencies[componentName] || {}
+      const dependents = details.dependents || []
+      const dependent_count = dependents.length
+      const matchingComponent = components.find(
+        (component: ServiceCatalogueComponent) =>
+          component.app_insights_cloud_role_name === componentName,
+      )
+  
+      if (matchingComponent) {
+        const documentId = matchingComponent.documentId
+        await postComponent(documentId, dependent_count)
+      } else {
+        logger.warn(`Component with name ${componentName} not found in components list.`)
+      }
+    }
+  } else {
+    logger.warn("No PROD environment found in componentDependencies.")
+  }
+
   await redisClient.quit()
   await flush()
 
-  logger.info('Updating service catalogue with dependent counts')
-  const prodDependencies = componentDependencies.filter(dep => Object.keys(dep).includes("PROD"))
-  for (const componentName of Object.keys(prodDependencies)) {
-    const details = prodDependencies[componentName] || {}
-    const dependents = details.dependents || []
-    const dependent_count = dependents.length
-    const matchingComponent = components.find((component: ServiceCatalogueComponent)  => component.app_insights_cloud_role_name === componentName)
-
-    if (matchingComponent) {
-      const documentId = matchingComponent.documentId
-
-      // Call postComponent to update the dependent_count for the component
-      await postComponent(documentId, dependent_count)
-    } else {
-      logger.warn(`Component with name ${componentName} not found in components list.`)
-    }
-  }
 }
 
 run().catch(async e => {
