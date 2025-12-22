@@ -46,15 +46,15 @@ const run = async () => {
     config.environments.map(environment => calculateDependencies(environment, components)),
   ) as [EnvType, DependencyInfo][]
 
-  logger.info(`Starting to publish dependency info`)
+  logger.info(`Starting to publish dependency info in Redis`)
 
   const data = Object.fromEntries(componentDependencies)
 
   await redisService.write(data)
 
-  logger.info(`Finished publishing dependency info`)
+  logger.info(`Finished publishing dependency info in Redis`)
 
-  logger.info('Updating service catalogue with dependent counts')
+  logger.info(`Starting update of service catalogue with dependent counts`)
   const validComponents = Array.isArray(components.components) 
     ? components.components
     : [] as ServiceCatalogueComponent[]
@@ -76,13 +76,12 @@ const run = async () => {
         await componentService.putComponent(documentId, dependent_count)
         logger.info(`Component ${componentName} has ${dependent_count} dependents.`)
       } else {
-        logger.info(`Missing componen details for ${componentName} ${JSON.stringify(matchingComponent)}`)
-        logger.warn(`Component with name ${componentName} not found in components list.`)
+        logger.info(`Missing service catalogue component ${componentName} ${JSON.stringify(matchingComponent)}`)
       }
     }
-    logger.info('Completed updating service catalogue with dependent counts')
+    logger.info(`Finished updating service catalogue with dependent counts`)
   } else {
-    logger.warn("No PROD environment found in componentDependencies.")
+    logger.warn(`No PROD environment found in componentDependencies.`)
   }
 
   await redisClient.quit()
