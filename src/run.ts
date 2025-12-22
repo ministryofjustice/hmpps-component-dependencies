@@ -3,14 +3,14 @@ import applicationInfo from './utils/applicationInfo'
 
 import config, { EnvType, type Environment } from './config'
 import gatherDependencyInfo, { type DependencyInfo } from './dependency-info-gatherer'
-import getComponents from './data/serviceCatalogue'
-import { postComponent } from './data/serviceCatalogue'
+import ComponentService from './data/serviceCatalogue'
 import getDependencies from './data/appInsights'
 import { createRedisClient } from './data/redis/redisClient'
 import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
 import { type Components } from './data/Components'
 import { type ServiceCatalogueComponent } from './data/serviceCatalogue/Client'
+import { type ComponentInfo } from './dependency-info-gatherer'
 
 initialiseAppInsights(applicationInfo())
 
@@ -33,6 +33,7 @@ const calculateDependencies = async (
 }
 
 const run = async () => {
+  const componentService = new ComponentService();
   const redisClient = createRedisClient()
   await redisClient.connect()
 
@@ -40,11 +41,11 @@ const run = async () => {
 
   logger.info(`Starting to gather dependency info`)
 
-  const components = await getComponents()
+  const components = await componentService.getComponents()
 
   const componentDependencies = await Promise.all(
     config.environments.map(environment => calculateDependencies(environment, components)),
-  )
+  ) as [EnvType, DependencyInfo][]
 
   logger.info(`Starting to publish dependency info`)
 
@@ -55,23 +56,24 @@ const run = async () => {
   logger.info(`Finished publishing dependency info`)
 
   logger.info('Updating service catalogue with dependent counts')
+  const validComponents: ServiceCatalogueComponent[] = Array.isArray(components) ? components : []
   const prodDependencyTuple = componentDependencies.find(([env]) => env === "PROD")
   if (prodDependencyTuple) {
     const [, prodDependencyInfo] = prodDependencyTuple
     const prodDependencies = prodDependencyInfo.componentDependencyInfo
   
     for (const componentName of Object.keys(prodDependencies)) {
-      const details = prodDependencies[componentName] || {}
+      const details = prodDependencies[componentName] || {} as ComponentInfo
       const dependents = details.dependents || []
       const dependent_count = dependents.length
-      const matchingComponent = components.find(
+      const matchingComponent = validComponents.find(
         (component: ServiceCatalogueComponent) =>
-          component.app_insights_cloud_role_name === componentName,
+          component.name === componentName
       )
   
       if (matchingComponent) {
         const documentId = matchingComponent.documentId
-        await postComponent(documentId, dependent_count)
+        await componentService.postComponent(documentId, dependent_count)
       } else {
         logger.warn(`Component with name ${componentName} not found in components list.`)
       }

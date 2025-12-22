@@ -2,7 +2,11 @@ import { Client } from './Client'
 import { Components } from '../Components'
 
 class ComponentService {
-  const client = new Client()
+  private client: Client
+
+  constructor() {
+    this.client = new Client()
+  }
   async getComponents() {
     const components = await this.client.getComponents()
     const filteredComponents = components
