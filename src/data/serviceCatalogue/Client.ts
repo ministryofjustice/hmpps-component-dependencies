@@ -25,8 +25,8 @@ export class Client extends RestClient {
     return response.data
   }
 
-  async postComponent({ documentId, dependent_count }: { documentId: string; dependent_count: number }) {
-    const response = await this.post<ServiceCatalogueResponse>({
+  async putComponent({ documentId, dependent_count }: { documentId: string; dependent_count: number }) {
+    const response = await this.put<ServiceCatalogueResponse>({
       path: `/v1/components/${documentId}`,
       data: { dependent_count: dependent_count },
     }, asSystem())

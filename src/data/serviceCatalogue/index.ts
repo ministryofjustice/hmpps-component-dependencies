@@ -27,9 +27,9 @@ class ComponentService {
     return new Components(filteredComponents)
   }
 
-  async postComponent(documentId: string, dependent_count: number){
+  async putComponent(documentId: string, dependent_count: number){
     try {
-      const response = await this.client.postComponent({ documentId, dependent_count })
+      const response = await this.client.putComponent({ documentId, dependent_count })
       console.log(`Component with documentId ${documentId} successfully updated with dependent_count: ${dependent_count}`)
       return response
     } catch (error) {
