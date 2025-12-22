@@ -21,4 +21,17 @@ const getComponents = async () => {
   return new Components(filteredComponents)
 }
 
+const postComponent = async (documentId: string, dependent_count: number) => {
+  const client = new Client()
+  try {
+    const response = await client.postComponent({ documentId, dependent_count })
+    console.log(`Component with documentId ${documentId} successfully updated with dependent_count: ${dependent_count}`)
+    return response
+  } catch (error) {
+    console.error(`Failed to update component with documentId ${documentId}:`, error)
+    throw error
+  }
+}
+
 export default getComponents
+export { postComponent }

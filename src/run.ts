@@ -3,7 +3,7 @@ import applicationInfo from './utils/applicationInfo'
 
 import config, { EnvType, type Environment } from './config'
 import gatherDependencyInfo, { type DependencyInfo } from './dependency-info-gatherer'
-import getComponents from './data/serviceCatalogue'
+import { postComponent } from './data/serviceCatalogue'
 import getDependencies from './data/appInsights'
 import { createRedisClient } from './data/redis/redisClient'
 import RedisService from './data/redis/redisService'
@@ -54,6 +54,24 @@ const run = async () => {
 
   await redisClient.quit()
   await flush()
+
+  logger.info('Updating service catalogue with dependent counts')
+  const prodDependencies = componentDependencies.filter(dep => dep.environment === "PROD")
+  for (const componentName of Object.keys(prodDependencies)) {
+    const details = prodDependencies[componentName] || {}
+    const dependents = details.dependents || []
+    const dependent_count = dependents.length
+    const matchingComponent = components.find((component: any)  => component.name === componentName)
+
+    if (matchingComponent) {
+      const documentId = matchingComponent.documentId
+
+      // Call postComponent to update the dependent_count for the component
+      await postComponent(documentId, dependent_count)
+    } else {
+      logger.warn(`Component with name ${componentName} not found in components list.`)
+    }
+  }
 }
 
 run().catch(async e => {
