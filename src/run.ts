@@ -61,7 +61,7 @@ const run = async () => {
     const details = prodDependencies[componentName] || {}
     const dependents = details.dependents || []
     const dependent_count = dependents.length
-    const matchingComponent = components.find((component: any)  => component.name === componentName)
+    const matchingComponent = components.find((component: any)  => component.app_insights_cloud_role_name === componentName)
 
     if (matchingComponent) {
       const documentId = matchingComponent.documentId
