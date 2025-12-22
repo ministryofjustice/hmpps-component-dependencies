@@ -42,7 +42,6 @@ const run = async () => {
   logger.info(`Starting to gather dependency info`)
 
   const components = await componentService.getComponents()
-  logger.info(`Components fetched from service catalogue: ${JSON.stringify(components, null, 2)}`)
   const componentDependencies = await Promise.all(
     config.environments.map(environment => calculateDependencies(environment, components)),
   ) as [EnvType, DependencyInfo][]
@@ -56,7 +55,9 @@ const run = async () => {
   logger.info(`Finished publishing dependency info`)
 
   logger.info('Updating service catalogue with dependent counts')
-  const validComponents: ServiceCatalogueComponent[] = Array.isArray(components) ? components : []
+  const validComponents = Array.isArray(components.components) 
+    ? components.components
+    : [] as ServiceCatalogueComponent[]
   const prodDependencyTuple = componentDependencies.find(([env]) => env === "PROD")
   if (prodDependencyTuple) {
     const [, prodDependencyInfo] = prodDependencyTuple
@@ -67,8 +68,7 @@ const run = async () => {
       const dependents = details.dependents || []
       const dependent_count = dependents.length
       const matchingComponent = validComponents.find(
-        (component: ServiceCatalogueComponent) =>
-          component.name === componentName
+        component => component.name === componentName
       )
   
       if (matchingComponent) {

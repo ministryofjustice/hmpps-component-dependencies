@@ -7,7 +7,7 @@ class ComponentService {
   constructor() {
     this.client = new Client()
   }
-  async getComponents() {
+  async getComponents(): Promise<Components> {
     const components = await this.client.getComponents()
     const filteredComponents = components
       .filter(component => component.envs?.length)
