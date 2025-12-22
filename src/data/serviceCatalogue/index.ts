@@ -20,6 +20,7 @@ class ComponentService {
             name: env.name,
             hostname: env.url.replace('https://', ''),
             clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
+            documentId: entry.documentId,
           })),
       }))
 
