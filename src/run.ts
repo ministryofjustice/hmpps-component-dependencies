@@ -58,7 +58,6 @@ const run = async () => {
   const validComponents = Array.isArray(components.components) 
     ? components.components
     : [] as ServiceCatalogueComponent[]
-  // logger.info(`${JSON.stringify(validComponents, null, 2)}`)
   const prodDependencyTuple = componentDependencies.find(([env]) => env === "PROD")
   if (prodDependencyTuple) {
     const [, prodDependencyInfo] = prodDependencyTuple
@@ -72,10 +71,9 @@ const run = async () => {
       const matchingComponent = validComponents.find(
         component => component.name === componentName
       )
-      console.log(`matchingComponent: ${JSON.stringify(matchingComponent, null, 2)}`)
       const documentId = matchingComponent.documentId
       if (documentId) {
-        // await componentService.postComponent(documentId, dependent_count)
+        await componentService.postComponent(documentId, dependent_count)
         logger.info(`Component ${componentName} has ${dependent_count} dependents.`)
       } else {
         logger.warn(`Component with name ${componentName} not found in components list.`)
