@@ -56,7 +56,6 @@ const run = async () => {
   logger.info(`Finished publishing dependency info`)
 
   logger.info('Updating service catalogue with dependent counts')
-  logger.info(`Total components in service catalogue: ${components.length}`)
   const validComponents: ServiceCatalogueComponent[] = Array.isArray(components) ? components : []
   logger.info(`Components in service catalogue: ${JSON.stringify(validComponents, null, 2)}`);
   const prodDependencyTuple = componentDependencies.find(([env]) => env === "PROD")
