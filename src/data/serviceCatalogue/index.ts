@@ -12,6 +12,7 @@ class ComponentService {
     const filteredComponents = components
       .filter(component => component.envs?.length)
       .map(entry => ({
+        documentId: entry.documentId,
         name: entry.name,
         cloudRoleName: entry.app_insights_cloud_role_name,
         envs: entry.envs
@@ -20,7 +21,6 @@ class ComponentService {
             name: env.name,
             hostname: env.url.replace('https://', ''),
             clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
-            documentId: entry.documentId,
           })),
       }))
 

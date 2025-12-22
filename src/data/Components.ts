@@ -1,10 +1,10 @@
 import ComponentNode from '../component-node'
 
 export type Component = {
+  documentId?: string
   name: string
   cloudRoleName: string
   envs: { name: string; hostname: string; clusterHostname: string }[]
-  documentId?: string
 }
 
 // A relationship between a component and something else
