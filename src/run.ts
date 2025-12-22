@@ -73,7 +73,8 @@ const run = async () => {
       )
       const documentId = matchingComponent.documentId
       if (documentId) {
-        await componentService.postComponent(documentId, dependent_count)
+        // await componentService.postComponent(documentId, dependent_count)
+        logger.info(`Component ${componentName} has ${dependent_count} dependents.`)
       } else {
         logger.warn(`Component with name ${componentName} not found in components list.`)
       }
