@@ -16,7 +16,7 @@ spec:
         spec:
           containers:
           - name: hmpps-component-dependencies
-            image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+            image: {{ .Values.image.repository }}:{{ .Values.version }}
             args:
             - node
             - dist/run
