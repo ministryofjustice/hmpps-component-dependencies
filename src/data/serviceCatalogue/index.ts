@@ -10,18 +10,19 @@ class ComponentService {
   async getComponents(): Promise<Components> {
     const components = await this.client.getComponents()
     const filteredComponents = components
-      .filter(component => component.envs?.length)
+      .filter(entry => entry.app_insights_cloud_role_name)
       .map(entry => ({
-        documentId: entry.documentId,
         name: entry.name,
         cloudRoleName: entry.app_insights_cloud_role_name,
-        envs: entry.envs
-          .filter(env => env.url)
-          .map(env => ({
-            name: env.name,
-            hostname: env.url.replace('https://', ''),
-            clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
-          })),
+        envs: entry.envs?.length
+          ? entry.envs
+              .filter(env => env.url)
+              .map(env => ({
+                name: env.name,
+                hostname: env.url.replace('https://', ''),
+                clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
+              }))
+          : [],
       }))
 
     return new Components(filteredComponents)
@@ -37,6 +38,5 @@ class ComponentService {
     }
   }
 }
-
 
 export default ComponentService
