@@ -1,5 +1,6 @@
 import { Client } from './Client'
 import { Components } from '../Components'
+import logger from '../../utils/logger'
 
 class ComponentService {
   private client: Client
@@ -7,11 +8,13 @@ class ComponentService {
   constructor() {
     this.client = new Client()
   }
+
   async getComponents(): Promise<Components> {
     const components = await this.client.getComponents()
     const filteredComponents = components
       .filter(entry => entry.app_insights_cloud_role_name)
       .map(entry => ({
+        documentId: entry.documentId,
         name: entry.name,
         cloudRoleName: entry.app_insights_cloud_role_name,
         envs: entry.envs?.length
@@ -28,12 +31,12 @@ class ComponentService {
     return new Components(filteredComponents)
   }
 
-  async putComponent(documentId: string, dependent_count: number){
+  async putComponent(documentId: string, dependentCount: number) {
     try {
-      const response = await this.client.putComponent({ documentId, dependent_count })
+      const response = await this.client.putComponent({ documentId, dependentCount })
       return response
     } catch (error) {
-      console.error(`Failed to update component with documentId ${documentId}:`, error)
+      logger.error(`Failed to update component with documentId ${documentId}:`, error)
       throw error
     }
   }

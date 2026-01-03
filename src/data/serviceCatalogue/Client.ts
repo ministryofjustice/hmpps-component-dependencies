@@ -25,12 +25,15 @@ export class Client extends RestClient {
     return response.data
   }
 
-  async putComponent({ documentId, dependent_count }: { documentId: string; dependent_count: number }) {
-    const payload = { data: { 'dependent_count': dependent_count } }
-    const response = await this.put<ServiceCatalogueResponse>({
-      path: `/v1/components/${documentId}`,
-      data: payload,
-    }, asSystem())
+  async putComponent({ documentId, dependentCount }: { documentId: string; dependentCount: number }) {
+    const payload = { data: { dependent_count: dependentCount } }
+    const response = await this.put<ServiceCatalogueResponse>(
+      {
+        path: `/v1/components/${documentId}`,
+        data: payload,
+      },
+      asSystem(),
+    )
     return response.data
   }
 }
