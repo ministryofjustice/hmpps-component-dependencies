@@ -53,7 +53,7 @@ const updateServiceCatalogueComponentDependentCount = async (
     if (matchingComponent && matchingComponent.documentId) {
       const { documentId } = matchingComponent
       await componentService.putComponent(documentId, dependentCount)
-      logger.info(`Setting dependency count of component ${componentName} to ${dependentCount}`)
+      logger.info(`Updated dependency count of component ${componentName} to ${dependentCount}`)
     } else {
       logger.info(`Missing service catalogue component ${componentName} ${JSON.stringify(matchingComponent)}`)
     }
