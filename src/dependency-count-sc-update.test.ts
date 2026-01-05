@@ -37,6 +37,7 @@ describe('DependencyCountService ', () => {
         documentId: 'doc-1',
         name: 'ComponentA',
         cloudRoleName: 'ComponentA',
+        dependentCount: 0,
         envs: [
           {
             name: 'dev',
@@ -49,6 +50,7 @@ describe('DependencyCountService ', () => {
         documentId: 'doc-2',
         name: 'ComponentB',
         cloudRoleName: 'ComponentB',
+        dependentCount: 12,
         envs: [
           {
             name: 'dev',
@@ -61,6 +63,7 @@ describe('DependencyCountService ', () => {
         documentId: 'doc-3',
         name: 'ComponentC',
         cloudRoleName: 'ComponentC',
+        dependentCount: 5,
         envs: [
           {
             name: 'dev',
@@ -104,6 +107,7 @@ describe('DependencyCountService ', () => {
         documentId: 'doc-1',
         name: 'ComponentA',
         cloudRoleName: 'ComponentA',
+        dependentCount: 3,
         envs: [
           {
             name: 'dev',
@@ -116,6 +120,7 @@ describe('DependencyCountService ', () => {
         documentId: 'doc-2',
         name: 'ComponentB',
         cloudRoleName: 'ComponentB',
+        dependentCount: 2,
         envs: [
           {
             name: 'dev',
@@ -151,6 +156,7 @@ describe('DependencyCountService ', () => {
         documentId: 'doc-1',
         name: 'ComponentA',
         cloudRoleName: 'ComponentA',
+        dependentCount: 2,
         envs: [
           {
             name: 'dev',
@@ -180,9 +186,39 @@ describe('DependencyCountService ', () => {
 
     it('should handle if service catalogue components has missing component', () => {
       const component1: Component = {
+        documentId: 'doc-1',
+        name: 'ComponentA',
+        cloudRoleName: 'ComponentA',
+        dependentCount: 1,
+        envs: [
+          {
+            name: 'dev',
+            hostname: 'http://componentA',
+            clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
+          },
+        ],
+      }
+
+      const components = new Components([component1])
+
+      const componentDependencies: Record<string, ComponentInfo> = {
+        ComponentA: {
+          dependents: [{ name: 'ComponentB', isKnownComponent: true }],
+          dependencies: { components: [], categories: [], other: [] },
+        },
+      }
+
+      const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
+
+      expect(result).toHaveLength(0)
+    })
+
+    it('should not update service catalogue if dependent_count is matching', () => {
+      const component1: Component = {
         documentId: 'doc-2',
         name: 'ComponentB',
         cloudRoleName: 'Component2',
+        dependentCount: 2,
         envs: [
           {
             name: 'dev',
@@ -210,6 +246,7 @@ describe('DependencyCountService ', () => {
 
       expect(result).toEqual([{ documentId: 'doc-2', componentName: 'ComponentB', dependentCount: 0 }])
     })
+    
   })
 
   describe('updateServiceCatalogueComponentDependentCount', () => {
@@ -218,6 +255,7 @@ describe('DependencyCountService ', () => {
         documentId: 'doc-1',
         name: 'ComponentA',
         cloudRoleName: 'ComponentA',
+        dependentCount: 0,
         envs: [
           {
             name: 'dev',

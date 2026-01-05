@@ -22,9 +22,15 @@ export class DependencyCountService {
       const matchingComponent = validComponents.find(component => component.name === componentName)
       const documentId = matchingComponent?.documentId
       if (documentId) {
-        dependencyCounts.push({ documentId, componentName, dependentCount })
-      }
-      else {
+        if (matchingComponent.dependentCount !== null && matchingComponent.dependentCount !== dependentCount) {
+          dependencyCounts.push({ documentId, componentName, dependentCount })
+        } else if (matchingComponent.dependentCount === null) {
+          logger.info(`Component ${componentName} has null dependent count, updating to ${dependentCount}.`)
+          dependencyCounts.push({ documentId, componentName, dependentCount })
+        } else if (matchingComponent.dependentCount === dependentCount) {
+          logger.info(`Ignoring component ${componentName} as counts match.`)
+        }
+      } else {
         logger.warn(`Component ${componentName} not found in service catalogue.`)
       }
     }

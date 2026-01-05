@@ -17,6 +17,7 @@ class ComponentService {
         documentId: entry.documentId,
         name: entry.name,
         cloudRoleName: entry.app_insights_cloud_role_name,
+        dependentCount: entry.dependent_count,
         envs: entry.envs?.length
           ? entry.envs
               .filter(env => env.url)
