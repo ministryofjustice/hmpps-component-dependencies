@@ -43,7 +43,6 @@ const run = async () => {
   const componentDependencies = await Promise.all(
     config.environments.map(environment => calculateDependencies(environment, components)),
   )
-
   logger.info(`Starting to publish dependency info`)
 
   const data = Object.fromEntries(componentDependencies)
