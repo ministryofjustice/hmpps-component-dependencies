@@ -54,7 +54,7 @@ const run = async () => {
   logger.info(`Finished publishing dependency info in Redis`)
 
   logger.info(`Starting update of service catalogue with dependent counts`)
-  const dependencyCountService = new DependencyCountService() // Create an instance of the class
+  const dependencyCountService = new DependencyCountService()
   await dependencyCountService.updateServiceCatalogueComponentDependentCount(componentDependencies, components, componentService)
 
   await redisClient.quit()

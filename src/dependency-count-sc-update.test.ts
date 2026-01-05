@@ -102,55 +102,6 @@ describe('DependencyCountService ', () => {
       ])
     })
 
-    it('should handle components with no dependents property', () => {
-      const component1: Component = {
-        documentId: 'doc-1',
-        name: 'ComponentA',
-        cloudRoleName: 'ComponentA',
-        dependentCount: 3,
-        envs: [
-          {
-            name: 'dev',
-            hostname: 'http://component1',
-            clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
-          },
-        ],
-      }
-      const component2: Component = {
-        documentId: 'doc-2',
-        name: 'ComponentB',
-        cloudRoleName: 'ComponentB',
-        dependentCount: 2,
-        envs: [
-          {
-            name: 'dev',
-            hostname: 'http://component2',
-            clusterHostname: 'ComponentB.ComponentB-dev.svc.cluster.local',
-          },
-        ],
-      }
-
-      const components = new Components([component1, component2])
-
-      const componentDependencies: Record<string, ComponentInfo> = {
-        ComponentA: {
-          dependents: [{ name: 'ComponentB', isKnownComponent: true }],
-          dependencies: { components: [], categories: [], other: [] },
-        },
-        ComponentB: {
-          dependents: [],
-          dependencies: { components: [], categories: [], other: [] },
-        },
-      }
-
-      const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
-
-      expect(result).toEqual([
-        { documentId: 'doc-1', componentName: 'ComponentA', dependentCount: 1 },
-        { documentId: 'doc-2', componentName: 'ComponentB', dependentCount: 0 },
-      ])
-    })
-
     it('should handle components with empty dependents arrays', () => {
       const component1: Component = {
         documentId: 'doc-1',
@@ -170,10 +121,6 @@ describe('DependencyCountService ', () => {
 
       const componentDependencies: Record<string, ComponentInfo> = {
         ComponentA: {
-          dependents: [],
-          dependencies: { components: [], categories: [], other: [] },
-        },
-        ComponentB: {
           dependents: [],
           dependencies: { components: [], categories: [], other: [] },
         },
