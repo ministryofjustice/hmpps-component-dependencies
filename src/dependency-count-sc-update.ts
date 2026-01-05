@@ -1,9 +1,8 @@
-import { type ComponentInfo } from './dependency-info-gatherer'
+import { type ComponentInfo, type DependencyInfo } from './dependency-info-gatherer'
 import logger from './utils/logger'
 import { type Components, Component } from './data/Components'
 import { EnvType } from './config'
 import ComponentService from './data/serviceCatalogue'
-import { type DependencyInfo } from './dependency-info-gatherer'
 
 export type ComponentDependentDetails = {
   documentId?: string
@@ -28,6 +27,9 @@ export class DependencyCountService {
       if (!documentId) {
         logger.warn(`Component ${componentName} not found in service catalogue.`)
       } else if (matchingComponent?.dependentCount !== dependentCount) {
+        logger.info(
+          `Updating component ${componentName} dependent_count (current: ${matchingComponent.dependentCount}, new: ${dependentCount})`,
+        )
         dependencyCounts.push({ documentId, componentName, dependentCount })
       } else if (matchingComponent.dependentCount === null) {
         logger.info(`Component ${componentName} has null dependent count, updating to ${dependentCount}.`)
@@ -61,6 +63,7 @@ export class DependencyCountService {
     // Loop through the returned data and call putComponent
     for (const { componentName, dependentCount, documentId } of dependencyCounts) {
       logger.info(`Updating dependency count of component: ${componentName}`)
+      // eslint-disable-next-line no-await-in-loop
       await componentService.putComponent(documentId, dependentCount)
       logger.info(`Updated dependency count of component ${componentName} to ${dependentCount}`)
     }
