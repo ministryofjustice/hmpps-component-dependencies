@@ -1,13 +1,34 @@
-import { dependencyCountCalculator } from './dependency-count-calculator'
+import { DependencyCountService   } from './dependency-count-sc-update'
 import { ComponentInfo } from './dependency-info-gatherer'
+import ComponentService from './data/serviceCatalogue'
 import { Component, Components } from './data/Components'
+import logger from './utils/logger'
 
-describe('dependencyCountCalculator', () => {
+describe('DependencyCountService ', () => {
+  let dependencyCountService: DependencyCountService
+  let mockComponentService: jest.Mocked<ComponentService>
+
+  beforeEach(() => {
+    dependencyCountService = new DependencyCountService()
+
+    mockComponentService = {
+      putComponent: jest.fn(),
+    } as unknown as jest.Mocked<ComponentService>
+
+    jest.spyOn(logger, 'info').mockImplementation(() => {})
+    jest.spyOn(logger, 'warn').mockImplementation(() => {})
+
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
   describe('getDependencyCounts', () => {
     it('should return an empty array when no components are provided', () => {
       const componentDependencies: Record<string, ComponentInfo> = {}
       const components = new Components([]) // Pass empty components
-      const result = dependencyCountCalculator.getDependencyCounts(componentDependencies, components.components)
+      const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
       expect(result).toEqual([])
     })
 
@@ -69,7 +90,7 @@ describe('dependencyCountCalculator', () => {
         },
       }
 
-      const result = dependencyCountCalculator.getDependencyCounts(componentDependencies, components.components)
+      const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
 
       expect(result).toEqual([
         { documentId: 'doc-1', componentName: 'ComponentA', dependentCount: 2 },
@@ -117,7 +138,7 @@ describe('dependencyCountCalculator', () => {
         },
       }
 
-      const result = dependencyCountCalculator.getDependencyCounts(componentDependencies, components.components)
+      const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
 
       expect(result).toEqual([
         { documentId: 'doc-1', componentName: 'ComponentA', dependentCount: 1 },
@@ -152,7 +173,7 @@ describe('dependencyCountCalculator', () => {
         },
       }
 
-      const result = dependencyCountCalculator.getDependencyCounts(componentDependencies, components.components)
+      const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
 
       expect(result).toEqual([{ documentId: 'doc-1', componentName: 'ComponentA', dependentCount: 0 }])
     })
@@ -185,9 +206,99 @@ describe('dependencyCountCalculator', () => {
         },
       }
 
-      const result = dependencyCountCalculator.getDependencyCounts(componentDependencies, components.components)
+      const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
 
       expect(result).toEqual([{ documentId: 'doc-2', componentName: 'ComponentB', dependentCount: 0 }])
+    })
+  })
+
+  describe('updateServiceCatalogueComponentDependentCount', () => {
+    it('should update service catalogue with dependency counts for PROD environment', async () => {
+      const component1: Component = {
+        documentId: 'doc-1',
+        name: 'ComponentA',
+        cloudRoleName: 'ComponentA',
+        envs: [
+          {
+            name: 'dev',
+            hostname: 'http://component1',
+            clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
+          },
+        ],
+      }
+      const components = new Components([component1])
+
+      const componentDependencies: [string, any][] = [
+        [
+          'PROD',
+          {
+            componentDependencyInfo: {
+              ComponentA: {
+                dependents: [{ name: 'ComponentB', isKnownComponent: true }],
+                dependencies: { components: [], categories: [], other: [] },
+              },
+            },
+          },
+        ],
+      ]
+
+      await dependencyCountService.updateServiceCatalogueComponentDependentCount(
+        componentDependencies as [any, any][],
+        components,
+        mockComponentService,
+      )
+
+      expect(mockComponentService.putComponent).toHaveBeenCalledWith('doc-1', 1)
+    })
+
+    it('should log a warning if no PROD environment is found', async () => {
+      const components = new Components([])
+
+      const componentDependencies: [string, any][] = [
+        [
+          'DEV',
+          {
+            componentDependencyInfo: {},
+          },
+        ],
+      ]
+
+      await dependencyCountService.updateServiceCatalogueComponentDependentCount(
+        componentDependencies as [any, any][],
+        components,
+        mockComponentService,
+      )
+
+      expect(logger.warn).toHaveBeenCalledWith('No PROD environment found in componentDependencies.')
+      expect(mockComponentService.putComponent).not.toHaveBeenCalled()
+    })
+
+    it('should log a warning if a component is not found in the service catalogue', async () => {
+      const componentName = 'MissingComponent'
+      const components = new Components([]) // Empty components list to simulate missing component
+    
+      const componentDependencies: [string, any][] = [
+        [
+          'PROD',
+          {
+            componentDependencyInfo: {
+              [componentName]: {
+                dependents: [],
+                dependencies: { components: [], categories: [], other: [] },
+              },
+            },
+          },
+        ],
+      ]
+    
+      await dependencyCountService.updateServiceCatalogueComponentDependentCount(
+        componentDependencies as [any, any][],
+        components,
+        mockComponentService,
+      )
+    
+      expect(logger.warn).toHaveBeenCalledWith(`Component ${componentName} not found in service catalogue.`)
+      expect(mockComponentService.putComponent).not.toHaveBeenCalled()
     })
   })
 })

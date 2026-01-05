@@ -29,13 +29,13 @@ const config = {
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx'),
   branchName: get('GIT_BRANCH', 'xxxxxxxxxxxxxxxxxxx'),
   serviceCatalogue: {
-    url: get<string>('SERVICE_CATALOGUE_URL'),
+    url: get<string>('SERVICE_CATALOGUE_URL', 'https://mock-service-catalogue'),
     timeout: {
       deadline: parseInt(process.env.SC_DEADLINE, 10) || 5000,
       response: parseInt(process.env.SC_RESPONSE, 10) || 10000,
     },
     agent: new AgentConfig(10000),
-    token: get<string>('SERVICE_CATALOGUE_TOKEN'),
+    token: get<string>('SERVICE_CATALOGUE_TOKEN', 'mock-service-catalogue-token'),
   },
   redis: {
     host: get('REDIS_HOST', 'localhost'),
@@ -45,12 +45,27 @@ const config = {
     tlsVerification: get('REDIS_TLS_VERIFICATION', 'true'),
   },
   environments: [
-    { env: EnvType.DEV, appInsightsCreds: { appId: get('DEV_APPINSIGHTS_ID'), appKey: get('DEV_APPINSIGHTS_KEY') } },
+    {
+      env: EnvType.DEV,
+      appInsightsCreds: {
+        appId: get('DEV_APPINSIGHTS_ID','mock-app-insights-id'),
+        appKey: get('DEV_APPINSIGHTS_KEY','mock-app-insights-key')
+      }
+    },
     {
       env: EnvType.PREPROD,
-      appInsightsCreds: { appId: get('PREPROD_APPINSIGHTS_ID'), appKey: get('PREPROD_APPINSIGHTS_KEY') },
+      appInsightsCreds: {
+        appId: get('PREPROD_APPINSIGHTS_ID','mock-app-insights-id'),
+        appKey: get('PREPROD_APPINSIGHTS_KEY','mock-app-insights-key')
+      },
     },
-    { env: EnvType.PROD, appInsightsCreds: { appId: get('PROD_APPINSIGHTS_ID'), appKey: get('PROD_APPINSIGHTS_KEY') } },
+    {
+      env: EnvType.PROD,
+      appInsightsCreds: {
+        appId: get('PROD_APPINSIGHTS_ID','mock-app-insights-id'),
+        appKey: get('PROD_APPINSIGHTS_KEY','mock-app-insights-key')
+      }
+    },
   ] as Environment[],
 }
 

@@ -8,8 +8,8 @@ import getDependencies from './data/appInsights'
 import { createRedisClient } from './data/redis/redisClient'
 import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
-import { type Components, Component } from './data/Components'
-import { dependencyCountCalculator } from './dependency-count-calculator'
+import { type Components } from './data/Components'
+import { DependencyCountService } from './dependency-count-sc-update'
 
 initialiseAppInsights(applicationInfo())
 
@@ -29,38 +29,6 @@ const calculateDependencies = async (
   logger.info(`${env}: Category freqs: \n${categoryCounts.join('\n')}`)
 
   return [env, { categoryToComponent, componentDependencyInfo, missingServices }]
-}
-
-const updateServiceCatalogueComponentDependentCount = async (
-  componentDependencies: [EnvType, DependencyInfo][],
-  components: Components,
-  componentService: ComponentService,
-): Promise<void> => {
-  const validComponents = Array.isArray(components.components) ? components.components : ([] as Component[])
-  const prodDependencyTuple = componentDependencies.find(([env]) => env === 'PROD')
-
-  if (!prodDependencyTuple) {
-    logger.warn('No PROD environment found in componentDependencies.')
-    return
-  }
-
-  const [, prodDependencyInfo] = prodDependencyTuple
-  const prodDependencies = prodDependencyInfo.componentDependencyInfo
-
-  // Use the updated dependencyCountCalculator to get dependency counts along with documentId
-  const dependencyCounts = dependencyCountCalculator.getDependencyCounts(prodDependencies, validComponents)
-
-  // Loop through the returned data and call putComponent
-  for (const { componentName, dependentCount, documentId } of dependencyCounts) {
-    logger.info(`Processing component: ${componentName}`)
-
-    if (documentId) {
-      componentService.putComponent(documentId, dependentCount)
-      logger.info(`Updated dependency count of component ${componentName} to ${dependentCount}`)
-    } else {
-      logger.info(`Missing service catalogue component ${componentName}`)
-    }
-  }
 }
 
 const run = async () => {
@@ -86,7 +54,8 @@ const run = async () => {
   logger.info(`Finished publishing dependency info in Redis`)
 
   logger.info(`Starting update of service catalogue with dependent counts`)
-  await updateServiceCatalogueComponentDependentCount(componentDependencies, components, componentService)
+  const dependencyCountService = new DependencyCountService() // Create an instance of the class
+  await dependencyCountService.updateServiceCatalogueComponentDependentCount(componentDependencies, components, componentService)
 
   await redisClient.quit()
   await flush()
