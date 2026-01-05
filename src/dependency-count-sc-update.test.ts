@@ -1,4 +1,4 @@
-import { DependencyCountService   } from './dependency-count-sc-update'
+import { DependencyCountService } from './dependency-count-sc-update'
 import { ComponentInfo } from './dependency-info-gatherer'
 import ComponentService from './data/serviceCatalogue'
 import { Component, Components } from './data/Components'
@@ -245,8 +245,7 @@ describe('DependencyCountService ', () => {
       const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
 
       expect(result).toEqual([{ documentId: 'doc-2', componentName: 'ComponentB', dependentCount: 0 }])
-    })
-    
+    })  
   })
 
   describe('updateServiceCatalogueComponentDependentCount', () => {
@@ -314,7 +313,7 @@ describe('DependencyCountService ', () => {
     it('should log a warning if a component is not found in the service catalogue', async () => {
       const componentName = 'MissingComponent'
       const components = new Components([]) // Empty components list to simulate missing component
-    
+
       const componentDependencies: [string, any][] = [
         [
           'PROD',
@@ -328,13 +327,13 @@ describe('DependencyCountService ', () => {
           },
         ],
       ]
-    
+
       await dependencyCountService.updateServiceCatalogueComponentDependentCount(
         componentDependencies as [any, any][],
         components,
         mockComponentService,
       )
-    
+
       expect(logger.warn).toHaveBeenCalledWith(`Component ${componentName} not found in service catalogue.`)
       expect(mockComponentService.putComponent).not.toHaveBeenCalled()
     })

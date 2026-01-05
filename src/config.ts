@@ -48,23 +48,23 @@ const config = {
     {
       env: EnvType.DEV,
       appInsightsCreds: {
-        appId: get('DEV_APPINSIGHTS_ID','mock-app-insights-id'),
-        appKey: get('DEV_APPINSIGHTS_KEY','mock-app-insights-key')
-      }
+        appId: get('DEV_APPINSIGHTS_ID', 'mock-app-insights-id'),
+        appKey: get('DEV_APPINSIGHTS_KEY', 'mock-app-insights-key'),
+      },
     },
     {
       env: EnvType.PREPROD,
       appInsightsCreds: {
-        appId: get('PREPROD_APPINSIGHTS_ID','mock-app-insights-id'),
-        appKey: get('PREPROD_APPINSIGHTS_KEY','mock-app-insights-key')
+        appId: get('PREPROD_APPINSIGHTS_ID', 'mock-app-insights-id'),
+        appKey: get('PREPROD_APPINSIGHTS_KEY', 'mock-app-insights-key'),
       },
     },
     {
       env: EnvType.PROD,
       appInsightsCreds: {
-        appId: get('PROD_APPINSIGHTS_ID','mock-app-insights-id'),
-        appKey: get('PROD_APPINSIGHTS_KEY','mock-app-insights-key')
-      }
+        appId: get('PROD_APPINSIGHTS_ID', 'mock-app-insights-id'),
+        appKey: get('PROD_APPINSIGHTS_KEY', 'mock-app-insights-key'),
+      },
     },
   ] as Environment[],
 }
