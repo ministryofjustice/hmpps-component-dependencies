@@ -39,7 +39,7 @@ export class DependencyCountService {
     return dependencyCounts
   }
 
-  updateServiceCatalogueComponentDependentCount(
+  async updateServiceCatalogueComponentDependentCount(
     componentDependencies: [EnvType, DependencyInfo][],
     components: Components,
     componentService: ComponentService,
@@ -61,7 +61,7 @@ export class DependencyCountService {
     // Loop through the returned data and call putComponent
     for (const { componentName, dependentCount, documentId } of dependencyCounts) {
       logger.info(`Updating dependency count of component: ${componentName}`)
-      componentService.putComponent(documentId, dependentCount)
+      await componentService.putComponent(documentId, dependentCount)
       logger.info(`Updated dependency count of component ${componentName} to ${dependentCount}`)
     }
   }
