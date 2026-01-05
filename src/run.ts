@@ -9,7 +9,6 @@ import { createRedisClient } from './data/redis/redisClient'
 import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
 import { type Components, Component } from './data/Components'
-import { type DependentCount } from './dependency-count-calculator'
 import { dependencyCountCalculator } from './dependency-count-calculator'
 
 initialiseAppInsights(applicationInfo())
@@ -33,34 +32,35 @@ const calculateDependencies = async (
 }
 
 const updateServiceCatalogueComponentDependentCount = async (
-  prodDependencyTuple: [string, DependencyInfo],
-  validComponents: Component[],
+  componentDependencies: [EnvType, DependencyInfo][],
+  components: Components,
   componentService: ComponentService,
-  // dependencyCountCalculator: DependencyCountCalculator, // New parameter for dependency count calculation
 ): Promise<void> => {
+  const validComponents = Array.isArray(components.components) ? components.components : ([] as Component[])
+  const prodDependencyTuple = componentDependencies.find(([env]) => env === 'PROD')
+
+  if (!prodDependencyTuple) {
+    logger.warn('No PROD environment found in componentDependencies.')
+    return
+  }
+
   const [, prodDependencyInfo] = prodDependencyTuple
   const prodDependencies = prodDependencyInfo.componentDependencyInfo
 
-  // Use the dependencyCountCalculator to calculate dependency counts
-  const dependencyCounts: Array<DependentCount> = dependencyCountCalculator.getDependencyCounts(prodDependencies)
+  // Use the updated dependencyCountCalculator to get dependency counts along with documentId
+  const dependencyCounts = dependencyCountCalculator.getDependencyCounts(prodDependencies, validComponents)
 
-  // Create an array of promises for concurrent execution
-  const promises = dependencyCounts.map(async ([componentName, dependentCount]) => {
+  // Loop through the returned data and call putComponent
+  for (const { componentName, dependentCount, documentId } of dependencyCounts) {
     logger.info(`Processing component: ${componentName}`)
 
-    const matchingComponent = validComponents.find(component => component.name === componentName)
-
-    if (matchingComponent && matchingComponent.documentId) {
-      const { documentId } = matchingComponent
-      await componentService.putComponent(documentId, dependentCount)
+    if (documentId) {
+      componentService.putComponent(documentId, dependentCount)
       logger.info(`Updated dependency count of component ${componentName} to ${dependentCount}`)
     } else {
-      logger.info(`Missing service catalogue component ${componentName} ${JSON.stringify(matchingComponent)}`)
+      logger.info(`Missing service catalogue component ${componentName}`)
     }
-  })
-
-  // Wait for all promises to resolve
-  await Promise.all(promises)
+  }
 }
 
 const run = async () => {
@@ -86,14 +86,7 @@ const run = async () => {
   logger.info(`Finished publishing dependency info in Redis`)
 
   logger.info(`Starting update of service catalogue with dependent counts`)
-  const validComponents = Array.isArray(components.components) ? components.components : ([] as Component[])
-  const prodDependencyTuple = componentDependencies.find(([env]) => env === 'PROD')
-  if (prodDependencyTuple) {
-    await updateServiceCatalogueComponentDependentCount(prodDependencyTuple, validComponents, componentService)
-    logger.info(`Finished updating service catalogue with dependent counts`)
-  } else {
-    logger.warn(`No PROD environment found in componentDependencies.`)
-  }
+  await updateServiceCatalogueComponentDependentCount(componentDependencies, components, componentService)
 
   await redisClient.quit()
   await flush()
