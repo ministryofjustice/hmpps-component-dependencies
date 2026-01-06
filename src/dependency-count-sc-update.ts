@@ -31,9 +31,6 @@ export class DependencyCountService {
           `Updating component ${componentName} dependent_count (current: ${matchingComponent.dependentCount}, new: ${dependentCount})`,
         )
         dependencyCounts.push({ documentId, componentName, dependentCount })
-      } else if (matchingComponent.dependentCount === null) {
-        logger.info(`Component ${componentName} has null dependent count, updating to ${dependentCount}.`)
-        dependencyCounts.push({ documentId, componentName, dependentCount })
       } else if (matchingComponent.dependentCount === dependentCount) {
         logger.info(`Ignoring component ${componentName} as counts match.`)
       }
