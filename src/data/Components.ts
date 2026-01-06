@@ -1,8 +1,10 @@
 import ComponentNode from '../component-node'
 
 export type Component = {
+  documentId?: string
   name: string
   cloudRoleName: string
+  dependentCount: number
   envs: { name: string; hostname: string; clusterHostname: string }[]
 }
 

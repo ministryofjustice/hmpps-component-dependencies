@@ -3,12 +3,13 @@ import applicationInfo from './utils/applicationInfo'
 
 import config, { EnvType, type Environment } from './config'
 import gatherDependencyInfo, { type DependencyInfo } from './dependency-info-gatherer'
-import getComponents from './data/serviceCatalogue'
+import ComponentService from './data/serviceCatalogue'
 import getDependencies from './data/appInsights'
 import { createRedisClient } from './data/redis/redisClient'
 import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
 import { type Components } from './data/Components'
+import { DependencyCountService } from './dependency-count-sc-update'
 
 initialiseAppInsights(applicationInfo())
 
@@ -31,6 +32,7 @@ const calculateDependencies = async (
 }
 
 const run = async () => {
+  const componentService = new ComponentService()
   const redisClient = createRedisClient()
   await redisClient.connect()
 
@@ -38,18 +40,22 @@ const run = async () => {
 
   logger.info(`Starting to gather dependency info`)
 
-  const components = await getComponents()
-
-  const componentDependencies = await Promise.all(
+  const components = await componentService.getComponents()
+  const componentDependencies = (await Promise.all(
     config.environments.map(environment => calculateDependencies(environment, components)),
-  )
-  logger.info(`Starting to publish dependency info`)
+  )) as [EnvType, DependencyInfo][]
+
+  logger.info(`Starting to publish dependency info in Redis`)
 
   const data = Object.fromEntries(componentDependencies)
 
   await redisService.write(data)
 
-  logger.info(`Finished publishing dependency info`)
+  logger.info(`Finished publishing dependency info in Redis`)
+
+  logger.info(`Starting update of service catalogue with dependent counts`)
+  const dependencyCountService = new DependencyCountService()
+  await dependencyCountService.updateServiceCatalogueComponentDependentCount(componentDependencies, components, componentService)
 
   await redisClient.quit()
   await flush()

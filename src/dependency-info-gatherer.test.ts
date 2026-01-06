@@ -6,16 +6,19 @@ describe('DependencyInfoGatherer', () => {
     const component1: Component = {
       name: 'comp-1',
       cloudRoleName: 'comp1',
+      dependentCount: 2,
       envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
+      dependentCount: 1,
       envs: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
     }
     const component3: Component = {
       name: 'comp-3',
       cloudRoleName: 'comp3',
+      dependentCount: 0,
       envs: [{ name: 'dev', hostname: 'http://component3', clusterHostname: 'comp3.comp3-dev.svc.cluster.local' }],
     }
 
