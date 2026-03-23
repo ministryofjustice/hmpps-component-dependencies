@@ -1,5 +1,5 @@
 import { type AppInsightsCreds } from '../../config'
-import { type Dependency } from '../Components'
+import { type Dependency, type MessagingConfig } from '../Components'
 import AppInsights from './Client'
 import Queries from './queries'
 
@@ -12,4 +12,21 @@ const getDependencies = async (appInsightsCreds: AppInsightsCreds): Promise<Depe
   return results.rows.map(row => ({ componentName: row[0], dependencyHostname: sanitize(row[1]), type: row[2] }))
 }
 
-export default getDependencies
+const getMessagingConfig = async (appInsightsCreds: AppInsightsCreds): Promise<MessagingConfig[]> => {
+  const appInsights = new AppInsights(appInsightsCreds)
+  const results = await appInsights.query(Queries.MessagingConfig())
+
+  return results.rows.map(row => ({
+    componentName: row[0],
+    inbound_queue: Array.isArray(row[1]) ? row[1] : row[1]?.split(',') || [],
+    topic_queue: Array.isArray(row[2]) ? row[2] : row[2]?.split(',') || [],
+    outbound_queue: Array.isArray(row[3]) ? row[3] : row[3]?.split(',') || [],
+  }))
+}
+
+const appInsightsService = {
+  getDependencies,
+  getMessagingConfig,
+}
+
+export default appInsightsService

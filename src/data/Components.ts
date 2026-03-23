@@ -5,12 +5,17 @@ export type Component = {
   name: string
   cloudRoleName: string
   dependentCount: number
-  envs: { name: string; hostname: string; clusterHostname: string }[]
+  envs: { name: string; hostname: string; clusterHostname: string; documentId?: string }[]
 }
 
 // A relationship between a component and something else
 export type Dependency = { componentName: string; dependencyHostname: string; type: string }
-
+export type MessagingConfig = {
+  componentName: string
+  inbound_queue: string[]
+  topic_queue: string[]
+  outbound_queue: string[]
+}
 export type ComponentMap = Record<string, ComponentNode>
 
 export class Components {

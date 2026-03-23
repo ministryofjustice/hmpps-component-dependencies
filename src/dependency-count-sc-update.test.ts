@@ -1,7 +1,8 @@
 import { DependencyCountService } from './dependency-count-sc-update'
-import { ComponentInfo } from './dependency-info-gatherer'
+import { ComponentInfo, type DependencyInfo } from './dependency-info-gatherer'
 import ComponentService from './data/serviceCatalogue'
 import { Component, Components } from './data/Components'
+import { EnvType } from './config'
 import logger from './utils/logger'
 
 describe('DependencyCountService ', () => {
@@ -17,7 +18,6 @@ describe('DependencyCountService ', () => {
 
     jest.spyOn(logger, 'info').mockImplementation(() => {})
     jest.spyOn(logger, 'warn').mockImplementation(() => {})
-
   })
 
   afterEach(() => {
@@ -192,7 +192,7 @@ describe('DependencyCountService ', () => {
       const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
 
       expect(result).toEqual([{ documentId: 'doc-2', componentName: 'ComponentB', dependentCount: 0 }])
-    })  
+    })
   })
 
   describe('updateServiceCatalogueComponentDependentCount', () => {
@@ -212,22 +212,24 @@ describe('DependencyCountService ', () => {
       }
       const components = new Components([component1])
 
-      const componentDependencies: [string, any][] = [
+      const componentDependencies: [EnvType, DependencyInfo][] = [
         [
-          'PROD',
+          EnvType.PROD,
           {
+            categoryToComponent: {},
             componentDependencyInfo: {
               ComponentA: {
                 dependents: [{ name: 'ComponentB', isKnownComponent: true }],
                 dependencies: { components: [], categories: [], other: [] },
               },
             },
+            missingServices: [],
           },
         ],
       ]
 
       await dependencyCountService.updateServiceCatalogueComponentDependentCount(
-        componentDependencies as [any, any][],
+        componentDependencies,
         components,
         mockComponentService,
       )
@@ -238,22 +240,24 @@ describe('DependencyCountService ', () => {
     it('should log a warning if no PROD environment is found', async () => {
       const components = new Components([])
 
-      const componentDependencies: [string, any][] = [
+      const componentDependencies: [EnvType, DependencyInfo][] = [
         [
-          'DEV',
+          EnvType.DEV,
           {
+            categoryToComponent: {},
             componentDependencyInfo: {},
+            missingServices: [],
           },
         ],
       ]
 
       await dependencyCountService.updateServiceCatalogueComponentDependentCount(
-        componentDependencies as [any, any][],
+        componentDependencies,
         components,
         mockComponentService,
       )
 
-      expect(logger.warn).toHaveBeenCalledWith('No PROD environment found in componentDependencies.')
+      expect(logger.info).toHaveBeenCalledWith('No PROD environment found in componentDependencies.')
       expect(mockComponentService.putComponent).not.toHaveBeenCalled()
     })
 
@@ -261,22 +265,24 @@ describe('DependencyCountService ', () => {
       const componentName = 'MissingComponent'
       const components = new Components([]) // Empty components list to simulate missing component
 
-      const componentDependencies: [string, any][] = [
+      const componentDependencies: [EnvType, DependencyInfo][] = [
         [
-          'PROD',
+          EnvType.PROD,
           {
+            categoryToComponent: {},
             componentDependencyInfo: {
               [componentName]: {
                 dependents: [],
                 dependencies: { components: [], categories: [], other: [] },
               },
             },
+            missingServices: [],
           },
         ],
       ]
 
       await dependencyCountService.updateServiceCatalogueComponentDependentCount(
-        componentDependencies as [any, any][],
+        componentDependencies,
         components,
         mockComponentService,
       )

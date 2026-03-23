@@ -1,6 +1,7 @@
 import { Client } from './Client'
-import { Components } from '../Components'
+import { Components, type MessagingConfig } from '../Components'
 import logger from '../../utils/logger'
+import { type EnvType } from '../../config'
 
 class ComponentService {
   private client: Client
@@ -25,6 +26,7 @@ class ComponentService {
                 name: env.name,
                 hostname: env.url.replace('https://', ''),
                 clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
+                documentId: env.documentId,
               }))
           : [],
       }))
@@ -39,6 +41,48 @@ class ComponentService {
     } catch (error) {
       logger.error(`Failed to update component with documentId ${documentId}:`, error)
       throw error
+    }
+  }
+
+  async updateEnvironmentAwsMessagingConfig(
+    messagingConfigByEnvironment: [EnvType, MessagingConfig[]][],
+    components: Components,
+  ) {
+    for (const [environment, messagingConfigs] of messagingConfigByEnvironment) {
+      const targetEnvironment = environment.toLowerCase()
+
+      for (const config of messagingConfigs) {
+        const matchingComponent = components.components.find(
+          component => component.cloudRoleName === config.componentName || component.name === config.componentName,
+        )
+
+        if (matchingComponent) {
+          const matchingEnvironment = matchingComponent.envs.find(env => env.name.toLowerCase() === targetEnvironment)
+          const environmentDocumentId = matchingEnvironment?.documentId
+
+          if (environmentDocumentId) {
+            // eslint-disable-next-line no-await-in-loop
+            await this.client.putEnvironmentAwsMessagingConfig({
+              environmentDocumentId,
+              messagingConfig: {
+                inbound_queue: config.inbound_queue,
+                topic_queue: config.topic_queue,
+                outbound_queue: config.outbound_queue,
+              },
+            })
+
+            logger.info(
+              `Updated aws_MessagingConfig for ${matchingComponent.name} (${targetEnvironment}) in service catalogue.`,
+            )
+          } else {
+            logger.warn(
+              `Environment ${targetEnvironment} not found for component ${matchingComponent.name} in service catalogue.`,
+            )
+          }
+        } else {
+          logger.warn(`Component ${config.componentName} not found in service catalogue.`)
+        }
+      }
     }
   }
 }
