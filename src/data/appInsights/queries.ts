@@ -20,17 +20,17 @@ const Queries = {
   MessagingConfig: () => `
         let sqs_data = dependencies
         | where type == "Queue Message | aws_sqs"
-        | summarize outbound_queue = make_set(target) by cloud_RoleName;
+        | summarize outbound_sqs_queues = make_set(target) by cloud_RoleName;
 
         let sns_data = dependencies
         | where type == "Queue Message | aws.sns"
-        | summarize topic_queue = make_set(target) by cloud_RoleName;
+        | summarize outbound_sns_topics = make_set(target) by cloud_RoleName;
 
         let source_data = requests
         | where isnotempty(source)
         | where isempty(url)
         | where source <> "(temporary)"
-        | summarize inbound_queue = make_set(source) by cloud_RoleName;
+        | summarize inbound_sqs_queues = make_set(source) by cloud_RoleName;
 
         let role_names = union isfuzzy=true
             (sqs_data | project cloud_RoleName),
@@ -44,9 +44,9 @@ const Queries = {
         | join kind=leftouter source_data on cloud_RoleName
         | project
             cloud_RoleName,
-            inbound_queue = iif(isnull(inbound_queue), dynamic([]), inbound_queue),
-            topic_queue = iif(isnull(topic_queue), dynamic([]), topic_queue),
-            outbound_queue = iif(isnull(outbound_queue), dynamic([]), outbound_queue)
+            inbound_sqs_queues = iif(isnull(inbound_sqs_queues), dynamic([]), inbound_sqs_queues),
+            outbound_sns_topics = iif(isnull(outbound_sns_topics), dynamic([]), outbound_sns_topics),
+            outbound_sqs_queues = iif(isnull(outbound_sqs_queues), dynamic([]), outbound_sqs_queues)
 `,
 }
 

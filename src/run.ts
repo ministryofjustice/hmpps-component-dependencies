@@ -35,6 +35,7 @@ const getAwsMessagingConfig = async ({ env, appInsightsCreds }: Environment): Pr
   logger.info(`Getting AWS Messaging Config for ${env} environment`)
   const messagingConfig = await appInsightsService.getMessagingConfig(appInsightsCreds)
   logger.info(`${env}: Messaging config records: ${messagingConfig.length}`)
+  logger.info(`${env}: Messaging config records:`, messagingConfig)
   return [env, messagingConfig]
 }
 
@@ -70,9 +71,11 @@ const run = async () => {
 
   const messagingConfigByEnvironment: [EnvType, MessagingConfig[]][] = []
   for (const environment of config.environments) {
-    // eslint-disable-next-line no-await-in-loop
-    const messagingConfig = await getAwsMessagingConfig(environment)
-    messagingConfigByEnvironment.push(messagingConfig)
+    if (environment.env !== EnvType.PROD) {
+      // eslint-disable-next-line no-await-in-loop
+      const messagingConfig = await getAwsMessagingConfig(environment)
+      messagingConfigByEnvironment.push(messagingConfig)
+    }
   }
   logger.info(`Starting update of service catalogue environments with aws_messaging_config`)
   await componentService.updateEnvironmentAwsMessagingConfig(messagingConfigByEnvironment, components)

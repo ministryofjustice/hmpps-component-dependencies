@@ -52,6 +52,9 @@ class ComponentService {
       const targetEnvironment = environment.toLowerCase()
 
       for (const config of messagingConfigs) {
+        logger.info(
+          `Processing AWS Messaging Config for component ${config.componentName} in environment ${targetEnvironment}`,
+        )
         const matchingComponent = components.components.find(
           component => component.cloudRoleName === config.componentName || component.name === config.componentName,
         )
@@ -65,9 +68,9 @@ class ComponentService {
             await this.client.putEnvironmentAwsMessagingConfig({
               environmentDocumentId,
               messagingConfig: {
-                inbound_queue: config.inbound_queue,
-                topic_queue: config.topic_queue,
-                outbound_queue: config.outbound_queue,
+                inbound_sqs_queues: config.inbound_sqs_queues,
+                outbound_sns_topics: config.outbound_sns_topics,
+                outbound_sqs_queues: config.outbound_sqs_queues,
               },
             })
 

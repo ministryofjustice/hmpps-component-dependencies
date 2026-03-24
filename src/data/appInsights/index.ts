@@ -53,9 +53,9 @@ const getMessagingConfig = async (appInsightsCreds: AppInsightsCreds): Promise<M
 
   return results.rows.map(row => ({
     componentName: row[0],
-    inbound_queue: parseMessagingArray(row[1]),
-    topic_queue: parseMessagingArray(row[2]),
-    outbound_queue: parseMessagingArray(row[3]),
+    inbound_sqs_queues: parseMessagingArray(row[1]),
+    outbound_sns_topics: parseMessagingArray(row[2]),
+    outbound_sqs_queues: parseMessagingArray(row[3]),
   }))
 }
 
