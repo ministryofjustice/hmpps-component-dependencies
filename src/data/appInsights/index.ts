@@ -5,6 +5,41 @@ import Queries from './queries'
 
 export const sanitize = (s: string) => (s ? s.replace(':443', '').replace(/(.*?\.gov\.uk).*/, '$1') : '')
 
+const parseMessagingArray = (value: unknown): string[] => {
+  if (value == null) {
+    return []
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap(item => parseMessagingArray(item))
+  }
+
+  if (typeof value !== 'string') {
+    return []
+  }
+
+  const trimmed = value.trim()
+  if (!trimmed || trimmed === '[]') {
+    return []
+  }
+
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(trimmed)
+      if (Array.isArray(parsed)) {
+        return parsed.map(item => `${item}`.trim()).filter(Boolean)
+      }
+    } catch {
+      // Fall back to CSV parsing below if value is not valid JSON.
+    }
+  }
+
+  return trimmed
+    .split(',')
+    .map(item => item.trim().replace(/^"|"$/g, ''))
+    .filter(Boolean)
+}
+
 const getDependencies = async (appInsightsCreds: AppInsightsCreds): Promise<Dependency[]> => {
   const appInsights = new AppInsights(appInsightsCreds)
   const results = await appInsights.query(Queries.DEPENDENCIES())
@@ -18,9 +53,9 @@ const getMessagingConfig = async (appInsightsCreds: AppInsightsCreds): Promise<M
 
   return results.rows.map(row => ({
     componentName: row[0],
-    inbound_queue: Array.isArray(row[1]) ? row[1] : row[1]?.split(',') || [],
-    topic_queue: Array.isArray(row[2]) ? row[2] : row[2]?.split(',') || [],
-    outbound_queue: Array.isArray(row[3]) ? row[3] : row[3]?.split(',') || [],
+    inbound_queue: parseMessagingArray(row[1]),
+    topic_queue: parseMessagingArray(row[2]),
+    outbound_queue: parseMessagingArray(row[3]),
   }))
 }
 

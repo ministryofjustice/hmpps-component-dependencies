@@ -45,10 +45,10 @@ export class Client extends RestClient {
     environmentDocumentId: string
     messagingConfig: Omit<MessagingConfig, 'componentName'>
   }) {
-    const payload = { data: { aws_MessagingConfig: messagingConfig } }
+    const payload = { data: { aws_messaging_config: messagingConfig } }
     const response = await this.put<{ data: unknown }>(
       {
-        path: `/v1/envs/${environmentDocumentId}`,
+        path: `/v1/environments/${environmentDocumentId}`,
         data: payload,
       },
       asSystem(),
