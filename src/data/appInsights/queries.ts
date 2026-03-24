@@ -20,27 +20,33 @@ const Queries = {
   MessagingConfig: () => `
         let sqs_data = dependencies
         | where type == "Queue Message | aws_sqs"
-        | summarize sqs = make_set(target) by cloud_RoleName;
+        | summarize outbound_queue = make_set(target) by cloud_RoleName;
 
         let sns_data = dependencies
         | where type == "Queue Message | aws.sns"
-        | summarize sns = make_set(target) by cloud_RoleName;
+        | summarize topic_queue = make_set(target) by cloud_RoleName;
 
         let source_data = requests
         | where isnotempty(source)
         | where isempty(url)
         | where source <> "(temporary)"
-        | summarize source = make_set(source) by cloud_RoleName;
+        | summarize inbound_queue = make_set(source) by cloud_RoleName;
 
-        union isfuzzy=true
-            (sqs_data | project cloud_RoleName, sqs, sns=dynamic([]), source=dynamic([])),
-            (sns_data | project cloud_RoleName, sns, sqs=dynamic([]), source=dynamic([])),
-            (source_data | project cloud_RoleName, source, sqs=dynamic([]), sns=dynamic([]))
-        | summarize source = make_set(source), sns = make_set(sns), sqs = make_set(sqs) by cloud_RoleName
-        | extend sqs = iif(isnull(sqs), dynamic([]), sqs)
-        | extend sns = iif(isnull(sns), dynamic([]), sns)
-        | extend source = iif(isnull(source), dynamic([]), source)
-        | project cloud_RoleName, inbound_queue = source, topic_queue = sns, outbound_queue = sqs
+        let role_names = union isfuzzy=true
+            (sqs_data | project cloud_RoleName),
+            (sns_data | project cloud_RoleName),
+            (source_data | project cloud_RoleName)
+        | summarize by cloud_RoleName;
+
+        role_names
+        | join kind=leftouter sqs_data on cloud_RoleName
+        | join kind=leftouter sns_data on cloud_RoleName
+        | join kind=leftouter source_data on cloud_RoleName
+        | project
+            cloud_RoleName,
+            inbound_queue = iif(isnull(inbound_queue), dynamic([]), inbound_queue),
+            topic_queue = iif(isnull(topic_queue), dynamic([]), topic_queue),
+            outbound_queue = iif(isnull(outbound_queue), dynamic([]), outbound_queue)
 `,
 }
 

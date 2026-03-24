@@ -72,7 +72,7 @@ class ComponentService {
             })
 
             logger.info(
-              `Updated aws_MessagingConfig for ${matchingComponent.name} (${targetEnvironment}) in service catalogue.`,
+              `Updated aws_messaging_config for ${matchingComponent.name} (${targetEnvironment}) in service catalogue.`,
             )
           } else {
             logger.warn(
