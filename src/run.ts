@@ -71,11 +71,11 @@ const run = async () => {
 
   const messagingConfigByEnvironment: [EnvType, MessagingConfig[]][] = []
   for (const environment of config.environments) {
-    if (environment.env !== EnvType.PROD) {
-      // eslint-disable-next-line no-await-in-loop
-      const messagingConfig = await getAwsMessagingConfig(environment)
-      messagingConfigByEnvironment.push(messagingConfig)
-    }
+    // if (environment.env !== EnvType.PROD) {
+    // eslint-disable-next-line no-await-in-loop
+    const messagingConfig = await getAwsMessagingConfig(environment)
+    messagingConfigByEnvironment.push(messagingConfig)
+    // }
   }
   logger.info(`Starting update of service catalogue environments with aws_messaging_config`)
   await componentService.updateEnvironmentAwsMessagingConfig(messagingConfigByEnvironment, components)
