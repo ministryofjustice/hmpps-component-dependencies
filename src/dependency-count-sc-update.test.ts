@@ -40,6 +40,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 0,
         envs: [
           {
+            documentId: 'documentidcomp1env1',
             name: 'dev',
             hostname: 'http://component1',
             clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
@@ -53,6 +54,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 12,
         envs: [
           {
+            documentId: 'documentidcomp2env1',
             name: 'dev',
             hostname: 'http://component2',
             clusterHostname: 'ComponentB.ComponentB-dev.svc.cluster.local',
@@ -66,6 +68,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 5,
         envs: [
           {
+            documentId: 'documentidcomp3env1',
             name: 'dev',
             hostname: 'http://component3',
             clusterHostname: 'ComponentC.ComponentC-dev.svc.cluster.local',
@@ -110,6 +113,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 2,
         envs: [
           {
+            documentId: 'documentidcomp1env1',
             name: 'dev',
             hostname: 'http://component1',
             clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
@@ -139,6 +143,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 1,
         envs: [
           {
+            documentId: 'documentidcomp1env1',
             name: 'dev',
             hostname: 'http://componentA',
             clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
@@ -168,6 +173,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 2,
         envs: [
           {
+            documentId: 'documentidcomp2env1',
             name: 'dev',
             hostname: 'http://component2',
             clusterHostname: 'ComponentB.ComponentB-dev.svc.cluster.local',
@@ -204,6 +210,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 0,
         envs: [
           {
+            documentId: 'documentidcomp1env1',
             name: 'dev',
             hostname: 'http://component1',
             clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',

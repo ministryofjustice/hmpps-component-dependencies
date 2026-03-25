@@ -8,8 +8,9 @@ import appInsightsService from './data/appInsights'
 import { createRedisClient } from './data/redis/redisClient'
 import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
-import { type Components, type MessagingConfig } from './data/Components'
+import { type Components } from './data/Components'
 import { DependencyCountService } from './dependency-count-sc-update'
+import { MessagingConfigService } from './messaging-config-sc-update'
 
 initialiseAppInsights(applicationInfo())
 
@@ -29,14 +30,6 @@ const calculateDependencies = async (
   logger.info(`${env}: Category freqs: \n${categoryCounts.join('\n')}`)
 
   return [env, { categoryToComponent, componentDependencyInfo, missingServices }]
-}
-
-const getAwsMessagingConfig = async ({ env, appInsightsCreds }: Environment): Promise<[EnvType, MessagingConfig[]]> => {
-  logger.info(`Getting AWS Messaging Config for ${env} environment`)
-  const messagingConfig = await appInsightsService.getMessagingConfig(appInsightsCreds)
-  logger.info(`${env}: Messaging config records: ${messagingConfig.length}`)
-  logger.info(`${env}: Messaging config records:`, messagingConfig)
-  return [env, messagingConfig]
 }
 
 const run = async () => {
@@ -68,18 +61,16 @@ const run = async () => {
     components,
     componentService,
   )
+  logger.info(`Finished update of service catalogue with dependent counts`)
 
-  const messagingConfigByEnvironment: [EnvType, MessagingConfig[]][] = []
-  for (const environment of config.environments) {
-    // if (environment.env !== EnvType.PROD) {
-    // eslint-disable-next-line no-await-in-loop
-    const messagingConfig = await getAwsMessagingConfig(environment)
-    messagingConfigByEnvironment.push(messagingConfig)
-    // }
-  }
-  logger.info(`Starting update of service catalogue environments with aws_messaging_config`)
-  await componentService.updateEnvironmentAwsMessagingConfig(messagingConfigByEnvironment, components)
-  logger.info(`Finished update of service catalogue environments with aws_messaging_config`)
+  logger.info(`Starting update of service catalogue environments.aws_messaging_config`)
+  const messagingConfigService = new MessagingConfigService()
+  await messagingConfigService.updateServiceCatalogueEnvironmentAwsMessagingConfig(
+    config.environments,
+    components,
+    componentService,
+  )
+  logger.info(`Finished update of service catalogue environments.aws_messaging_config`)
 
   await redisClient.quit()
   await flush()

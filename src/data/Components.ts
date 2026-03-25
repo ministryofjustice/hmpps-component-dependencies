@@ -5,7 +5,7 @@ export type Component = {
   name: string
   cloudRoleName: string
   dependentCount: number
-  envs: { name: string; hostname: string; clusterHostname: string; documentId?: string }[]
+  envs: { documentId?: string; name: string; hostname: string; clusterHostname: string }[]
 }
 
 // A relationship between a component and something else
