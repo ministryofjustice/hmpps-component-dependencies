@@ -15,11 +15,9 @@ export class MessagingConfigService {
     const results: [EnvType, MessagingConfig[]][] = []
 
     for (const environment of environments) {
-      if (environment.env !== EnvType.PROD) {
-        // eslint-disable-next-line no-await-in-loop
-        const messagingConfig = await this.fetchMessagingConfig(environment.appInsightsCreds)
-        results.push([environment.env, messagingConfig])
-      }
+      // eslint-disable-next-line no-await-in-loop
+      const messagingConfig = await this.fetchMessagingConfig(environment.appInsightsCreds)
+      results.push([environment.env, messagingConfig])
     }
 
     return results

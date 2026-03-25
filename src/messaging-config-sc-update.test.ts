@@ -30,7 +30,7 @@ const sampleMessagingConfig: MessagingConfig[] = [
 const messagingConfigData = async () => sampleMessagingConfig
 
 describe('MessagingConfigService', () => {
-  test('fetches messaging config for DEV and PREPROD but not PROD', async () => {
+  test('fetches messaging config for DEV , PREPROD, PROD', async () => {
     const service = new MessagingConfigService(messagingConfigData)
 
     const result = await service.gatherMessagingConfig([devEnvironment, preprodEnvironment, prodEnvironment])
@@ -38,15 +38,8 @@ describe('MessagingConfigService', () => {
     expect(result).toStrictEqual([
       [EnvType.DEV, sampleMessagingConfig],
       [EnvType.PREPROD, sampleMessagingConfig],
+      [EnvType.PROD, sampleMessagingConfig],
     ])
-  })
-
-  test('skips PROD environment entirely', async () => {
-    const service = new MessagingConfigService(messagingConfigData)
-
-    const result = await service.gatherMessagingConfig([prodEnvironment])
-
-    expect(result).toStrictEqual([])
   })
 
   test('returns empty array when no environments provided', async () => {
@@ -65,9 +58,9 @@ describe('MessagingConfigService', () => {
     }
     const service = new MessagingConfigService(orderTrackingFetcher)
 
-    await service.gatherMessagingConfig([devEnvironment, preprodEnvironment])
+    await service.gatherMessagingConfig([devEnvironment, preprodEnvironment, prodEnvironment])
 
-    expect(callOrder).toStrictEqual(['dev-app-id', 'preprod-app-id'])
+    expect(callOrder).toStrictEqual(['dev-app-id', 'preprod-app-id', 'prod-app-id'])
   })
 
   test('gathers config and updates service catalogue environments', async () => {
@@ -87,11 +80,7 @@ describe('MessagingConfigService', () => {
     }
     const components = new Components([component])
 
-    await service.updateServiceCatalogueEnvironmentAwsMessagingConfig(
-      [devEnvironment, prodEnvironment],
-      components,
-      componentService,
-    )
+    await service.updateServiceCatalogueEnvironmentAwsMessagingConfig([devEnvironment], components, componentService)
 
     expect(updateCalls).toStrictEqual([[[[EnvType.DEV, sampleMessagingConfig]], components]])
   })
