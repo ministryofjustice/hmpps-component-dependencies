@@ -76,7 +76,14 @@ describe('MessagingConfigService', () => {
       name: 'component-a',
       cloudRoleName: 'component-a',
       dependentCount: 0,
-      envs: [{ name: 'dev', hostname: 'http://component-a', clusterHostname: 'component-a.dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp1env1',
+          name: 'dev',
+          hostname: 'http://component-a',
+          clusterHostname: 'component-a.dev.svc.cluster.local',
+        },
+      ],
     }
     const components = new Components([component])
 
