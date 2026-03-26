@@ -264,7 +264,7 @@ describe('DependencyCountService ', () => {
         mockComponentService,
       )
 
-      expect(logger.info).toHaveBeenCalledWith('No PROD environment found in componentDependencies.')
+      expect(logger.warn).toHaveBeenCalledWith('No PROD environment found in componentDependencies.')
       expect(mockComponentService.putComponent).not.toHaveBeenCalled()
     })
 

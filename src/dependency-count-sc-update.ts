@@ -47,7 +47,7 @@ export class DependencyCountService {
     const prodDependencyTuple = componentDependencies.find(([env]) => env === 'PROD')
 
     if (!prodDependencyTuple) {
-      logger.info('No PROD environment found in componentDependencies.')
+      logger.warn('No PROD environment found in componentDependencies.')
       return
     }
 
