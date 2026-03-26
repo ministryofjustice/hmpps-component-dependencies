@@ -48,6 +48,12 @@ class ComponentService {
     messagingConfigByEnvironment: [EnvType, MessagingConfig[]][],
     components: Components,
   ) {
+    const componentByName = new Map<string, (typeof components.components)[number]>()
+    components.components.forEach(component => {
+      componentByName.set(component.cloudRoleName, component)
+      componentByName.set(component.name, component)
+    })
+
     for (const [environment, messagingConfigs] of messagingConfigByEnvironment) {
       const targetEnvironment = environment.toLowerCase()
 
@@ -55,24 +61,30 @@ class ComponentService {
         logger.info(
           `Processing AWS Messaging Config for component ${config.componentName} in environment ${targetEnvironment}`,
         )
-        const matchingComponent = components.components.find(
-          component => component.cloudRoleName === config.componentName || component.name === config.componentName,
-        )
+        const matchingComponent = componentByName.get(config.componentName)
 
         if (matchingComponent) {
           const matchingEnvironment = matchingComponent.envs.find(env => env.name.toLowerCase() === targetEnvironment)
           const environmentDocumentId = matchingEnvironment?.documentId
 
           if (environmentDocumentId) {
-            // eslint-disable-next-line no-await-in-loop
-            await this.client.putEnvironmentAwsMessagingConfig({
-              environmentDocumentId,
-              messagingConfig: {
-                inbound_sqs_queues: config.inbound_sqs_queues,
-                outbound_sns_topics: config.outbound_sns_topics,
-                outbound_sqs_queues: config.outbound_sqs_queues,
-              },
-            })
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              await this.client.putEnvironmentAwsMessagingConfig({
+                environmentDocumentId,
+                messagingConfig: {
+                  inbound_sqs_queues: config.inbound_sqs_queues,
+                  outbound_sns_topics: config.outbound_sns_topics,
+                  outbound_sqs_queues: config.outbound_sqs_queues,
+                },
+              })
+            } catch (error) {
+              logger.error(
+                `Failed to update aws_messaging_config for component ${config.componentName} in environment ${targetEnvironment} (environmentDocumentId: ${environmentDocumentId})`,
+                error,
+              )
+              throw error
+            }
 
             logger.info(
               `Updated aws_messaging_config for ${matchingComponent.name} (${targetEnvironment}) in service catalogue.`,
