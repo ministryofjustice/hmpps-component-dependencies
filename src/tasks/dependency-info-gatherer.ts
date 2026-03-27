@@ -1,4 +1,4 @@
-import type { Dependency, ComponentMap } from './data/Components'
+import type { Dependency, ComponentMap } from '../data/Components'
 
 type DependencyReference = { name: string; type: string }
 type Dependent = { name: string; isKnownComponent: boolean }
@@ -65,18 +65,18 @@ const buildComponentInfo = (componentMap: ComponentMap): Record<string, Componen
   )
 }
 
-const gatherDependencyInfo = (components: ComponentMap): DependencyInfo => {
-  const categoryToComponent = buildCategoryToComponent(components)
-  const missingComponents = buildMissingComponents(components)
-  const componentDependencyInfo = buildComponentInfo(components)
+export class DependencyInfoGatherer {
+  gatherDependencyInfo(components: ComponentMap): DependencyInfo {
+    const categoryToComponent = buildCategoryToComponent(components)
+    const missingComponents = buildMissingComponents(components)
+    const componentDependencyInfo = buildComponentInfo(components)
 
-  const missingServices = missingComponents.map(c => c.dependencyHostname).sort()
+    const missingServices = missingComponents.map(c => c.dependencyHostname).sort()
 
-  return {
-    categoryToComponent,
-    componentDependencyInfo,
-    missingServices,
+    return {
+      categoryToComponent,
+      componentDependencyInfo,
+      missingServices,
+    }
   }
 }
-
-export default gatherDependencyInfo

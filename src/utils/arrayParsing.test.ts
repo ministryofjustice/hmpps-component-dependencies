@@ -1,18 +1,4 @@
-import { sanitize, parseMessagingArray } from '.'
-
-describe('sanitise', () => {
-  test('check removes :443', () => {
-    expect(sanitize('approved-premises-api.hmpps.service.justice.gov.uk:443')).toStrictEqual(
-      'approved-premises-api.hmpps.service.justice.gov.uk',
-    )
-  })
-
-  test('check removes random suffix', () => {
-    expect(
-      sanitize('education-employment-api.hmpps.service.justice.gov.uk | aaaaaaa-eeee-dddd-ccccc-bbbbbbbb'),
-    ).toStrictEqual('education-employment-api.hmpps.service.justice.gov.uk')
-  })
-})
+import { parseMessagingArray } from './arrayParsing'
 
 describe('parseMessagingArray', () => {
   describe('null and undefined handling', () => {
@@ -29,6 +15,11 @@ describe('parseMessagingArray', () => {
     test('should return array as-is for valid array input', () => {
       const input = ['queue1', 'queue2']
       expect(parseMessagingArray(input)).toStrictEqual(input)
+    })
+
+    test('should return handles non-string values for valid array input', () => {
+      const input = [1, 3, '']
+      expect(parseMessagingArray(input)).toStrictEqual(['1', '3'])
     })
 
     test('should return empty array for empty array input', () => {

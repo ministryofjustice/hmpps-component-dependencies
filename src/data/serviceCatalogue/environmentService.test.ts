@@ -1,18 +1,18 @@
 import { EnvType } from '../../config'
-import { Components, type Component, type MessagingConfig } from '../Components'
 import logger from '../../utils/logger'
-import ComponentService from './index'
+import { Components, type Component, type MessagingConfig } from '../Components'
+import { Client } from './Client'
+import EnvironmentService from './environmentService'
+
+jest.mock('./Client')
 
 describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
-  let service: ComponentService
-  let mockPutEnvironmentAwsMessagingConfig: jest.Mock
+  let service: EnvironmentService
+  let client: jest.Mocked<Client>
 
   beforeEach(() => {
-    service = new ComponentService()
-    mockPutEnvironmentAwsMessagingConfig = jest.fn().mockResolvedValue({})
-    ;(service as unknown as { client: { putEnvironmentAwsMessagingConfig: jest.Mock } }).client = {
-      putEnvironmentAwsMessagingConfig: mockPutEnvironmentAwsMessagingConfig,
-    }
+    client = new Client() as jest.Mocked<Client>
+    service = new EnvironmentService(client)
 
     jest.spyOn(logger, 'info').mockImplementation(() => {})
     jest.spyOn(logger, 'warn').mockImplementation(() => {})
@@ -53,11 +53,12 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
       ],
     ]
 
-    await service.updateEnvironmentAwsMessagingConfig(messagingConfigByEnvironment, components)
+    await service.updateMessagingConfig(messagingConfigByEnvironment, components)
 
-    expect(mockPutEnvironmentAwsMessagingConfig).toHaveBeenCalledWith({
+    expect(client.putEnvironmentAwsMessagingConfig).toHaveBeenCalledWith({
       environmentDocumentId: 'env-doc-1',
       messagingConfig: {
+        componentName: 'cloud-role-a',
         inbound_sqs_queues: ['inbound-1'],
         outbound_sns_topics: ['topic-1'],
         outbound_sqs_queues: ['outbound-1'],
@@ -81,10 +82,10 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
       ],
     ]
 
-    await service.updateEnvironmentAwsMessagingConfig(messagingConfigByEnvironment, components)
+    await service.updateMessagingConfig(messagingConfigByEnvironment, components)
 
     expect(logger.warn).toHaveBeenCalledWith('Component missing-component not found in service catalogue.')
-    expect(mockPutEnvironmentAwsMessagingConfig).not.toHaveBeenCalled()
+    expect(client.putEnvironmentAwsMessagingConfig).not.toHaveBeenCalled()
   })
 
   test('logs warning when target environment is not found for component', async () => {
@@ -117,17 +118,17 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
       ],
     ]
 
-    await service.updateEnvironmentAwsMessagingConfig(messagingConfigByEnvironment, components)
+    await service.updateMessagingConfig(messagingConfigByEnvironment, components)
 
     expect(logger.warn).toHaveBeenCalledWith(
       'Environment dev not found for component component-a in service catalogue.',
     )
-    expect(mockPutEnvironmentAwsMessagingConfig).not.toHaveBeenCalled()
+    expect(client.putEnvironmentAwsMessagingConfig).not.toHaveBeenCalled()
   })
 
   test('logs contextual error and rethrows when putEnvironmentAwsMessagingConfig fails', async () => {
     const error = new Error('request failed')
-    mockPutEnvironmentAwsMessagingConfig.mockRejectedValue(error)
+    client.putEnvironmentAwsMessagingConfig.mockRejectedValue(error)
 
     const component: Component = {
       name: 'component-a',
@@ -158,12 +159,12 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
       ],
     ]
 
-    await expect(service.updateEnvironmentAwsMessagingConfig(messagingConfigByEnvironment, components)).rejects.toThrow(
+    await expect(service.updateMessagingConfig(messagingConfigByEnvironment, components)).rejects.toThrow(
       'request failed',
     )
 
     expect(logger.error).toHaveBeenCalledWith(
-      'Failed to update aws_messaging_config for component cloud-role-a in environment dev (environmentDocumentId: env-doc-1)',
+      'Failed to update messaging config for component cloud-role-a in environment dev (environmentDocumentId: env-doc-1)',
       error,
     )
   })
