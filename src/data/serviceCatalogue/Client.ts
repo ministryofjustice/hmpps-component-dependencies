@@ -1,7 +1,7 @@
 import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
 import logger from '../../utils/logger'
 import config from '../../config'
-import { type MessagingConfig } from '../Components'
+import { type MessagingInfo } from '../Components'
 
 export type ServiceCatalogueComponent = {
   documentId: string
@@ -38,25 +38,26 @@ export class Client extends RestClient {
     return response.data
   }
 
-  async putEnvironmentAwsMessagingConfig({
+  async putEnvironmentAwsMessagingInfo({
     environmentDocumentId,
-    messagingConfig,
+    MessagingInfo,
   }: {
     environmentDocumentId: string
-    messagingConfig: Omit<MessagingConfig, 'componentName'>
+    MessagingInfo: Omit<MessagingInfo, 'componentName'>
   }) {
+    const payload = {
+      data: {
+        aws_messaging_config: {
+          inbound_sqs_queues: MessagingInfo.inbound_sqs_queues,
+          outbound_sns_topics: MessagingInfo.outbound_sns_topics,
+          outbound_sqs_queues: MessagingInfo.outbound_sqs_queues,
+        },
+      },
+    }
     const response = await this.put<{ data: unknown }>(
       {
         path: `/v1/environments/${environmentDocumentId}`,
-        data: {
-          data: {
-            aws_messaging_config: {
-              inbound_sqs_queues: messagingConfig.inbound_sqs_queues,
-              outbound_sns_topics: messagingConfig.outbound_sns_topics,
-              outbound_sqs_queues: messagingConfig.outbound_sqs_queues,
-            },
-          },
-        },
+        data: payload,
       },
       asSystem(),
     )

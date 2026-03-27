@@ -10,7 +10,7 @@ export type Component = {
 
 // A relationship between a component and something else
 export type Dependency = { componentName: string; dependencyHostname: string; type: string }
-export type MessagingConfig = {
+export type MessagingInfo = {
   componentName: string
   inbound_sqs_queues: string[]
   outbound_sns_topics: string[]

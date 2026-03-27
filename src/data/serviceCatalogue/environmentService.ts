@@ -1,31 +1,31 @@
 import type { Client } from './Client'
-import { Component, Components, type MessagingConfig } from '../Components'
+import { Component, Components, type MessagingInfo } from '../Components'
 import logger from '../../utils/logger'
 import { type EnvType } from '../../config'
 
 class EnvironmentService {
   constructor(private readonly client: Client) {}
 
-  async updateMessagingConfig(messagingConfigByEnvironment: [EnvType, MessagingConfig[]][], components: Components) {
+  async updateMessagingInfo(MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][], components: Components) {
     const componentByName = new Map<string, (typeof components.components)[number]>()
     components.components.forEach(component => {
       componentByName.set(component.cloudRoleName, component)
       componentByName.set(component.name, component)
     })
 
-    for (const [environment, messagingConfigs] of messagingConfigByEnvironment) {
+    for (const [environment, MessagingInfos] of MessagingInfoByEnvironment) {
       const targetEnvironment = environment.toLowerCase()
 
-      for (const config of messagingConfigs) {
-        await this.updateMessagingConfigForEnvironment(targetEnvironment, componentByName, config)
+      for (const config of MessagingInfos) {
+        await this.updateMessagingInfoForEnvironment(targetEnvironment, componentByName, config)
       }
     }
   }
 
-  private async updateMessagingConfigForEnvironment(
+  private async updateMessagingInfoForEnvironment(
     environment: string,
     componentByName: Map<string, Component>,
-    update: MessagingConfig,
+    update: MessagingInfo,
   ) {
     logger.info(`Updating messaging config for component ${update.componentName} in environment ${environment}`)
     const matchingComponent = componentByName.get(update.componentName)
@@ -43,7 +43,7 @@ class EnvironmentService {
     }
 
     try {
-      await this.client.putEnvironmentAwsMessagingConfig({ environmentDocumentId, messagingConfig: update })
+      await this.client.putEnvironmentAwsMessagingInfo({ environmentDocumentId, MessagingInfo: update })
     } catch (error) {
       logger.error(
         `Failed to update messaging config for component ${update.componentName} in environment ${environment} (environmentDocumentId: ${environmentDocumentId})`,

@@ -1,7 +1,7 @@
 import { type AppInsightsCreds } from '../../config'
 import { parseMessagingArray } from '../../utils/arrayParsing'
 import { sanitiseHostname } from '../../utils/hostnameSanitising'
-import { type Dependency, type MessagingConfig } from '../Components'
+import { type Dependency, type MessagingInfo } from '../Components'
 import AppInsights from './Client'
 import Queries from './queries'
 
@@ -18,8 +18,8 @@ export class AppInsightsService {
     }))
   }
 
-  async getMessagingConfig(): Promise<MessagingConfig[]> {
-    const results = await this.appInsights.query(Queries.MessagingConfig())
+  async getMessagingInfo(): Promise<MessagingInfo[]> {
+    const results = await this.appInsights.query(Queries.MessagingInfo())
 
     return results.rows.map(row => ({
       componentName: row[0],

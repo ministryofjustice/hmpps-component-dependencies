@@ -1,12 +1,12 @@
 import { EnvType } from '../../config'
 import logger from '../../utils/logger'
-import { Components, type Component, type MessagingConfig } from '../Components'
+import { Components, type Component, type MessagingInfo } from '../Components'
 import { Client } from './Client'
 import EnvironmentService from './environmentService'
 
 jest.mock('./Client')
 
-describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
+describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
   let service: EnvironmentService
   let client: jest.Mocked<Client>
 
@@ -39,7 +39,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
     }
 
     const components = new Components([component])
-    const messagingConfigByEnvironment: [EnvType, MessagingConfig[]][] = [
+    const MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
       [
         EnvType.DEV,
         [
@@ -53,11 +53,11 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
       ],
     ]
 
-    await service.updateMessagingConfig(messagingConfigByEnvironment, components)
+    await service.updateMessagingInfo(MessagingInfoByEnvironment, components)
 
-    expect(client.putEnvironmentAwsMessagingConfig).toHaveBeenCalledWith({
+    expect(client.putEnvironmentAwsMessagingInfo).toHaveBeenCalledWith({
       environmentDocumentId: 'env-doc-1',
-      messagingConfig: {
+      MessagingInfo: {
         componentName: 'cloud-role-a',
         inbound_sqs_queues: ['inbound-1'],
         outbound_sns_topics: ['topic-1'],
@@ -68,7 +68,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
 
   test('logs warning when component is not found', async () => {
     const components = new Components([])
-    const messagingConfigByEnvironment: [EnvType, MessagingConfig[]][] = [
+    const MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
       [
         EnvType.DEV,
         [
@@ -82,10 +82,10 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
       ],
     ]
 
-    await service.updateMessagingConfig(messagingConfigByEnvironment, components)
+    await service.updateMessagingInfo(MessagingInfoByEnvironment, components)
 
     expect(logger.warn).toHaveBeenCalledWith('Component missing-component not found in service catalogue.')
-    expect(client.putEnvironmentAwsMessagingConfig).not.toHaveBeenCalled()
+    expect(client.putEnvironmentAwsMessagingInfo).not.toHaveBeenCalled()
   })
 
   test('logs warning when target environment is not found for component', async () => {
@@ -104,7 +104,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
     }
 
     const components = new Components([component])
-    const messagingConfigByEnvironment: [EnvType, MessagingConfig[]][] = [
+    const MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
       [
         EnvType.DEV,
         [
@@ -118,17 +118,17 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
       ],
     ]
 
-    await service.updateMessagingConfig(messagingConfigByEnvironment, components)
+    await service.updateMessagingInfo(MessagingInfoByEnvironment, components)
 
     expect(logger.warn).toHaveBeenCalledWith(
       'Environment dev not found for component component-a in service catalogue.',
     )
-    expect(client.putEnvironmentAwsMessagingConfig).not.toHaveBeenCalled()
+    expect(client.putEnvironmentAwsMessagingInfo).not.toHaveBeenCalled()
   })
 
-  test('logs contextual error and rethrows when putEnvironmentAwsMessagingConfig fails', async () => {
+  test('logs contextual error and rethrows when putEnvironmentAwsMessagingInfo fails', async () => {
     const error = new Error('request failed')
-    client.putEnvironmentAwsMessagingConfig.mockRejectedValue(error)
+    client.putEnvironmentAwsMessagingInfo.mockRejectedValue(error)
 
     const component: Component = {
       name: 'component-a',
@@ -145,7 +145,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
     }
 
     const components = new Components([component])
-    const messagingConfigByEnvironment: [EnvType, MessagingConfig[]][] = [
+    const MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
       [
         EnvType.DEV,
         [
@@ -159,9 +159,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingConfig', () => {
       ],
     ]
 
-    await expect(service.updateMessagingConfig(messagingConfigByEnvironment, components)).rejects.toThrow(
-      'request failed',
-    )
+    await expect(service.updateMessagingInfo(MessagingInfoByEnvironment, components)).rejects.toThrow('request failed')
 
     expect(logger.error).toHaveBeenCalledWith(
       'Failed to update messaging config for component cloud-role-a in environment dev (environmentDocumentId: env-doc-1)',

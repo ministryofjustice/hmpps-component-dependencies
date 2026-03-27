@@ -1,8 +1,8 @@
 import { EnvType, type Environment } from '../config'
 import { AppInsightsService } from '../data/appInsights/appInsightsService'
-import { type MessagingConfig, Components, type Component } from '../data/Components'
+import { type MessagingInfo, Components, type Component } from '../data/Components'
 import EnvironmentService from '../data/serviceCatalogue/environmentService'
-import { MessagingConfigService } from './messaging-info-update'
+import { MessagingInfoService } from './messaging-info-update'
 
 const environmentService: jest.Mocked<EnvironmentService> = new EnvironmentService(
   null,
@@ -24,7 +24,7 @@ const preprodEnvironment: Environment = {
   appInsightsCreds: { appId: 'preprod-app-id', appKey: 'preprod-app-key' },
 }
 
-const sampleMessagingConfig: MessagingConfig[] = [
+const sampleMessagingInfo: MessagingInfo[] = [
   {
     componentName: 'component-a',
     inbound_sqs_queues: ['inbound-a'],
@@ -33,11 +33,11 @@ const sampleMessagingConfig: MessagingConfig[] = [
   },
 ]
 
-let service: MessagingConfigService
+let service: MessagingInfoService
 
-describe('MessagingConfigService', () => {
+describe('MessagingInfoService', () => {
   beforeEach(() => {
-    service = new MessagingConfigService(environmentService, () => appinsightsService)
+    service = new MessagingInfoService(environmentService, () => appinsightsService)
   })
 
   test('gathers config and updates service catalogue environments', async () => {
@@ -62,12 +62,12 @@ describe('MessagingConfigService', () => {
     }
     const components = new Components([component])
 
-    appinsightsService.getMessagingConfig.mockResolvedValue(sampleMessagingConfig)
+    appinsightsService.getMessagingInfo.mockResolvedValue(sampleMessagingInfo)
 
-    await service.updateMessagingConfig([devEnvironment, preprodEnvironment], components)
+    await service.updateMessagingInfo([devEnvironment, preprodEnvironment], components)
 
-    expect(environmentService.updateMessagingConfig.mock.calls[0][1]).toStrictEqual(components)
-    expect(environmentService.updateMessagingConfig.mock.calls[0][0]).toStrictEqual([
+    expect(environmentService.updateMessagingInfo.mock.calls[0][1]).toStrictEqual(components)
+    expect(environmentService.updateMessagingInfo.mock.calls[0][0]).toStrictEqual([
       [
         'DEV',
         [

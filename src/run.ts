@@ -10,7 +10,7 @@ import { createRedisClient } from './data/redis/redisClient'
 import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
 import { DependencyCountService } from './tasks/dependency-count-updater'
-import { MessagingConfigService } from './tasks/messaging-info-update'
+import { MessagingInfoService } from './tasks/messaging-info-update'
 import { Client } from './data/serviceCatalogue/Client'
 import DependencyCalculator from './dependency-calculator'
 import { DependencyInfoGatherer } from './tasks/dependency-info-gatherer'
@@ -47,8 +47,8 @@ const run = async () => {
   logger.info(`Finished update of service catalogue with dependent counts`)
 
   logger.info(`Starting update of service catalogue environments.aws_messaging_config`)
-  const messagingConfigService = new MessagingConfigService(environmentService, AppInsightsServiceFactory)
-  await messagingConfigService.updateMessagingConfig(config.environments, components)
+  const messagingInfoService = new MessagingInfoService(environmentService, AppInsightsServiceFactory)
+  await messagingInfoService.updateMessagingInfo(config.environments, components)
   logger.info(`Finished update of service catalogue environments.aws_messaging_config`)
 
   await flush()

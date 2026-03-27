@@ -17,7 +17,7 @@ const Queries = {
           type = coalesce(type1, type)
       | where type <> "InProc" and type <> "Ajax"
 `,
-  MessagingConfig: () => `
+  MessagingInfo: () => `
         let sqs_data = dependencies
         | where type == "Queue Message | aws_sqs"
         | summarize outbound_sqs_queues = strcat_array(make_set(target), ",") by cloud_RoleName;
