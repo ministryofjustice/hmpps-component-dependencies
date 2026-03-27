@@ -1,78 +1,56 @@
 import initialiseAppInsights, { flush } from './utils/appInsights'
 import applicationInfo from './utils/applicationInfo'
 
-import config, { EnvType, type Environment } from './config'
-import gatherDependencyInfo, { type DependencyInfo } from './dependency-info-gatherer'
-import ComponentService from './data/serviceCatalogue'
-import appInsightsService from './data/appInsights'
+import config from './config'
+import ComponentService from './data/serviceCatalogue/componentService'
+import EnvironmentService from './data/serviceCatalogue/environmentService'
+
+import { AppInsightsServiceFactory } from './data/appInsights/appInsightsService'
 import { createRedisClient } from './data/redis/redisClient'
 import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
-import { type Components } from './data/Components'
-import { DependencyCountService } from './dependency-count-sc-update'
-import { MessagingConfigService } from './messaging-config-sc-update'
+import { DependencyCountService } from './tasks/dependency-count-updater'
+import { MessagingConfigService } from './tasks/messaging-info-update'
+import { Client } from './data/serviceCatalogue/Client'
+import DependencyCalculator from './dependency-calculator'
+import { DependencyInfoGatherer } from './tasks/dependency-info-gatherer'
 
 initialiseAppInsights(applicationInfo())
 
-const calculateDependencies = async (
-  { env, appInsightsCreds }: Environment,
-  components: Components,
-): Promise<[EnvType, DependencyInfo]> => {
-  const dependencies = await appInsightsService.getDependencies(appInsightsCreds)
-  const componentMap = components.buildComponentMap(dependencies)
-  const { categoryToComponent, componentDependencyInfo, missingServices } = gatherDependencyInfo(componentMap)
-
-  logger.info(`${env}: Services missing from service catalogue: \n\t${missingServices.join('\n\t')}`)
-
-  const categoryCounts = Object.entries(categoryToComponent).map(
-    ([category, comps]) => `${category} =>  ${comps.length}`,
-  )
-  logger.info(`${env}: Category freqs: \n${categoryCounts.join('\n')}`)
-
-  return [env, { categoryToComponent, componentDependencyInfo, missingServices }]
-}
-
 const run = async () => {
-  const componentService = new ComponentService()
+  const client = new Client()
+  const componentService = new ComponentService(client)
+  const environmentService = new EnvironmentService(client)
+
   const redisClient = createRedisClient()
   await redisClient.connect()
-
-  const redisService = new RedisService(redisClient)
 
   logger.info(`Starting to gather dependency info`)
 
   const components = await componentService.getComponents()
-  const componentDependencies = (await Promise.all(
-    config.environments.map(environment => calculateDependencies(environment, components)),
-  )) as [EnvType, DependencyInfo][]
+
+  const dependencyCalculator = new DependencyCalculator(AppInsightsServiceFactory, new DependencyInfoGatherer())
+  const componentDependencies = await dependencyCalculator.calculateDependencies(components)
 
   logger.info(`Starting to publish dependency info in Redis`)
-
-  const data = Object.fromEntries(componentDependencies)
-
-  await redisService.write(data)
-
+  const redisService = new RedisService(redisClient)
+  try {
+    await redisService.write(componentDependencies)
+  } finally {
+    await redisClient.quit()
+  }
   logger.info(`Finished publishing dependency info in Redis`)
 
   logger.info(`Starting update of service catalogue with dependent counts`)
-  const dependencyCountService = new DependencyCountService()
-  await dependencyCountService.updateServiceCatalogueComponentDependentCount(
-    componentDependencies,
-    components,
-    componentService,
-  )
+  const dependencyCountService = new DependencyCountService(componentService)
+  await dependencyCountService.updateComponentDependentCount(componentDependencies, components)
   logger.info(`Finished update of service catalogue with dependent counts`)
 
   logger.info(`Starting update of service catalogue environments.aws_messaging_config`)
-  const messagingConfigService = new MessagingConfigService()
-  await messagingConfigService.updateServiceCatalogueEnvironmentAwsMessagingConfig(
-    config.environments,
-    components,
-    componentService,
-  )
+  const messagingConfigService = new MessagingConfigService(environmentService, AppInsightsServiceFactory)
+  await messagingConfigService.updateMessagingConfig(config.environments, components)
   logger.info(`Finished update of service catalogue environments.aws_messaging_config`)
 
-  await redisClient.quit()
   await flush()
 }
 
