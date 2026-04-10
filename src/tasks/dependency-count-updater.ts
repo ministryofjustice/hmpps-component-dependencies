@@ -61,6 +61,7 @@ export class DependencyCountService {
     for (const { componentName, dependentCount, documentId } of dependencyCounts) {
       logger.info(`Updating dependency count of component: ${componentName}`)
 
+      // eslint-disable-next-line no-await-in-loop -- Intentionally sequential to keep update flow predictable and logs ordered.
       await this.componentService.putComponent(documentId, dependentCount)
       logger.info(`Updated dependency count of component ${componentName} to ${dependentCount}`)
     }

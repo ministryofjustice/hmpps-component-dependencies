@@ -39,7 +39,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
     }
 
     const components = new Components([component])
-    const MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
+    const messagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
       [
         EnvType.DEV,
         [
@@ -53,7 +53,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
       ],
     ]
 
-    await service.updateMessagingInfo(MessagingInfoByEnvironment, components)
+    await service.updateMessagingInfo(messagingInfoByEnvironment, components)
 
     expect(client.putEnvironmentAwsMessagingInfo).toHaveBeenCalledWith({
       environmentDocumentId: 'env-doc-1',
@@ -68,7 +68,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
 
   test('logs warning when component is not found', async () => {
     const components = new Components([])
-    const MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
+    const messagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
       [
         EnvType.DEV,
         [
@@ -82,7 +82,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
       ],
     ]
 
-    await service.updateMessagingInfo(MessagingInfoByEnvironment, components)
+    await service.updateMessagingInfo(messagingInfoByEnvironment, components)
 
     expect(logger.warn).toHaveBeenCalledWith('Component missing-component not found in service catalogue.')
     expect(client.putEnvironmentAwsMessagingInfo).not.toHaveBeenCalled()
@@ -104,7 +104,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
     }
 
     const components = new Components([component])
-    const MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
+    const messagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
       [
         EnvType.DEV,
         [
@@ -118,7 +118,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
       ],
     ]
 
-    await service.updateMessagingInfo(MessagingInfoByEnvironment, components)
+    await service.updateMessagingInfo(messagingInfoByEnvironment, components)
 
     expect(logger.warn).toHaveBeenCalledWith(
       'Environment dev not found for component component-a in service catalogue.',
@@ -145,7 +145,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
     }
 
     const components = new Components([component])
-    const MessagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
+    const messagingInfoByEnvironment: [EnvType, MessagingInfo[]][] = [
       [
         EnvType.DEV,
         [
@@ -159,7 +159,7 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
       ],
     ]
 
-    await expect(service.updateMessagingInfo(MessagingInfoByEnvironment, components)).rejects.toThrow('request failed')
+    await expect(service.updateMessagingInfo(messagingInfoByEnvironment, components)).rejects.toThrow('request failed')
 
     expect(logger.error).toHaveBeenCalledWith(
       'Failed to update messaging config for component cloud-role-a in environment dev (environmentDocumentId: env-doc-1)',

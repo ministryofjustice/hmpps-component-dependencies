@@ -11,14 +11,15 @@ export class MessagingInfoService {
   ) {}
 
   async updateMessagingInfo(environments: Environment[], components: Components): Promise<void> {
-    const MessagingInfoByEnvironment = await this.gatherMessagingInfo(environments)
-    await this.environmentService.updateMessagingInfo(MessagingInfoByEnvironment, components)
+    const messagingInfoByEnvironment = await this.gatherMessagingInfo(environments)
+    await this.environmentService.updateMessagingInfo(messagingInfoByEnvironment, components)
   }
 
   private async gatherMessagingInfo(environments: Environment[]): Promise<[EnvType, MessagingInfo[]][]> {
     const results: [EnvType, MessagingInfo[]][] = []
 
     for (const environment of environments) {
+      // eslint-disable-next-line no-await-in-loop -- Intentionally sequential to keep per-environment logging and control query pacing.
       const MessagingInfo = await this.appInsightsServiceFactory(environment.appInsightsCreds).getMessagingInfo()
       logger.info(`${environment.env}: Retrieved messaging config for ${MessagingInfo.length} components`)
       results.push([environment.env, MessagingInfo])

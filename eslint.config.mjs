@@ -7,7 +7,6 @@ export default [
   }),
   {
     rules: {
-      'no-await-in-loop': 'off',
       'import/prefer-default-export': 'off',
     },
   },
