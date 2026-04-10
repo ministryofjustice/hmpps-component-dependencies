@@ -18,35 +18,44 @@ const Queries = {
       | where type <> "InProc" and type <> "Ajax"
 `,
   MessagingInfo: () => `
-        let sqs_data = dependencies
-        | where type == "Queue Message | aws_sqs"
-        | summarize outbound_sqs_queues = strcat_array(make_set(target), ",") by cloud_RoleName;
-
-        let sns_data = dependencies
-        | where type == "Queue Message | aws.sns"
-        | summarize outbound_sns_topics = strcat_array(make_set(target), ",") by cloud_RoleName;
-
-        let source_data = requests
-        | where isnotempty(source)
-        | where isempty(url)
-        | where source <> "(temporary)"
-        | summarize inbound_sqs_queues = strcat_array(make_set(source), ",") by cloud_RoleName;
-
-        let role_names = union isfuzzy=true
-            (sqs_data | project cloud_RoleName),
-            (sns_data | project cloud_RoleName),
-            (source_data | project cloud_RoleName)
-        | summarize by cloud_RoleName;
-
-        role_names
-        | join kind=leftouter sqs_data on cloud_RoleName
-        | join kind=leftouter sns_data on cloud_RoleName
-        | join kind=leftouter source_data on cloud_RoleName
+        let since = ago(5d);
+        union isfuzzy=true
+            (
+                dependencies
+                | where timestamp > since
+                | where type == "Queue Message | aws_sqs"
+                | where isnotempty(cloud_RoleName) and isnotempty(target)
+                | summarize outbound_sqs_queues = strcat_array(make_set(target), ",") by cloud_RoleName
+                | project cloud_RoleName, inbound_sqs_queues = "", outbound_sns_topics = "", outbound_sqs_queues
+            ),
+            (
+                dependencies
+                | where timestamp > since
+                | where type == "Queue Message | aws.sns"
+                | where isnotempty(cloud_RoleName) and isnotempty(target)
+                | summarize outbound_sns_topics = strcat_array(make_set(target), ",") by cloud_RoleName
+                | project cloud_RoleName, inbound_sqs_queues = "", outbound_sns_topics, outbound_sqs_queues = ""
+            ),
+            (
+                requests
+                | where timestamp > since
+                | where isnotempty(cloud_RoleName)
+                | where isnotempty(source)
+                | where isempty(url)
+                | where source <> "(temporary)"
+                | summarize inbound_sqs_queues = strcat_array(make_set(source), ",") by cloud_RoleName
+                | project cloud_RoleName, inbound_sqs_queues, outbound_sns_topics = "", outbound_sqs_queues = ""
+            )
+        | summarize
+            inbound_sqs_queues = max(inbound_sqs_queues),
+            outbound_sns_topics = max(outbound_sns_topics),
+            outbound_sqs_queues = max(outbound_sqs_queues)
+          by cloud_RoleName
         | project
             cloud_RoleName,
-            inbound_sqs_queues = iif(isnull(inbound_sqs_queues), "", inbound_sqs_queues),
-            outbound_sns_topics = iif(isnull(outbound_sns_topics), "", outbound_sns_topics),
-            outbound_sqs_queues = iif(isnull(outbound_sqs_queues), "", outbound_sqs_queues)
+            inbound_sqs_queues,
+            outbound_sns_topics,
+            outbound_sqs_queues
 `,
 }
 
