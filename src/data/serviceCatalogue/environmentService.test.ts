@@ -45,9 +45,9 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
         [
           {
             componentName: 'cloud-role-a',
-            inbound_sqs_queues: ['inbound-1'],
-            outbound_sns_topics: ['topic-1'],
-            outbound_sqs_queues: ['outbound-1'],
+            inboundSqsQueues: ['inbound-1'],
+            outboundSnsTopics: ['topic-1'],
+            outboundSqsQueues: ['outbound-1'],
           },
         ],
       ],
@@ -57,11 +57,11 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
 
     expect(client.putEnvironmentAwsMessagingInfo).toHaveBeenCalledWith({
       environmentDocumentId: 'env-doc-1',
-      MessagingInfo: {
+      messagingInfo: {
         componentName: 'cloud-role-a',
-        inbound_sqs_queues: ['inbound-1'],
-        outbound_sns_topics: ['topic-1'],
-        outbound_sqs_queues: ['outbound-1'],
+        inboundSqsQueues: ['inbound-1'],
+        outboundSnsTopics: ['topic-1'],
+        outboundSqsQueues: ['outbound-1'],
       },
     })
   })
@@ -74,9 +74,9 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
         [
           {
             componentName: 'missing-component',
-            inbound_sqs_queues: ['inbound-1'],
-            outbound_sns_topics: ['topic-1'],
-            outbound_sqs_queues: ['outbound-1'],
+            inboundSqsQueues: ['inbound-1'],
+            outboundSnsTopics: ['topic-1'],
+            outboundSqsQueues: ['outbound-1'],
           },
         ],
       ],
@@ -110,9 +110,9 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
         [
           {
             componentName: 'cloud-role-a',
-            inbound_sqs_queues: ['inbound-1'],
-            outbound_sns_topics: ['topic-1'],
-            outbound_sqs_queues: ['outbound-1'],
+            inboundSqsQueues: ['inbound-1'],
+            outboundSnsTopics: ['topic-1'],
+            outboundSqsQueues: ['outbound-1'],
           },
         ],
       ],
@@ -151,9 +151,9 @@ describe('ComponentService.updateEnvironmentAwsMessagingInfo', () => {
         [
           {
             componentName: 'cloud-role-a',
-            inbound_sqs_queues: ['inbound-1'],
-            outbound_sns_topics: ['topic-1'],
-            outbound_sqs_queues: ['outbound-1'],
+            inboundSqsQueues: ['inbound-1'],
+            outboundSnsTopics: ['topic-1'],
+            outboundSqsQueues: ['outbound-1'],
           },
         ],
       ],

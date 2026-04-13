@@ -1,5 +1,5 @@
 import { Component, Components } from '../data/Components'
-import { DependencyInfoGatherer } from './dependency-info-gatherer'
+import { DependencyInfoGatherer } from './dependencyInfoGatherer'
 
 describe('DependencyInfoGatherer', () => {
   test('simple example', () => {

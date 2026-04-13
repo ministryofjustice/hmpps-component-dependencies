@@ -1,6 +1,6 @@
-import { type ComponentInfo, type DependencyInfo } from './dependency-info-gatherer'
+import { type ComponentInfo, type DependencyInfo } from './dependencyInfoGatherer'
 import logger from '../utils/logger'
-import { type Components, Component } from '../data/Components'
+import { type Components, type Component } from '../data/Components'
 import { EnvType } from '../config'
 import ComponentService from '../data/serviceCatalogue/componentService'
 

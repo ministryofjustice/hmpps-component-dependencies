@@ -1,9 +1,9 @@
-import { DependencyCountService } from './dependency-count-updater'
+import { DependencyCountService } from './dependencyCountUpdater'
 import ComponentService from '../data/serviceCatalogue/componentService'
-import { Component, Components } from '../data/Components'
+import { type Components, type Component } from '../data/Components'
 import { EnvType } from '../config'
 import logger from '../utils/logger'
-import type { ComponentInfo, DependencyInfo } from './dependency-info-gatherer'
+import type { ComponentInfo, DependencyInfo } from './dependencyInfoGatherer'
 
 jest.mock('../data/serviceCatalogue/componentService')
 

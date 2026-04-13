@@ -6,14 +6,12 @@ import ComponentService from './data/serviceCatalogue/componentService'
 import EnvironmentService from './data/serviceCatalogue/environmentService'
 
 import { AppInsightsServiceFactory } from './data/appInsights/appInsightsService'
-import { createRedisClient } from './data/redis/redisClient'
-import RedisService from './data/redis/redisService'
 import logger from './utils/logger'
-import { DependencyCountService } from './tasks/dependency-count-updater'
-import { MessagingInfoService } from './tasks/messaging-info-update'
+import { DependencyCountService } from './tasks/dependencyCountUpdater'
+import { MessagingInfoService } from './tasks/messagingInfoUpdate'
 import { Client } from './data/serviceCatalogue/Client'
-import DependencyCalculator from './dependency-calculator'
-import { DependencyInfoGatherer } from './tasks/dependency-info-gatherer'
+import DependencyCalculator from './dependencyCalculator'
+import { DependencyInfoGatherer } from './tasks/dependencyInfoGatherer'
 
 initialiseAppInsights(applicationInfo())
 
@@ -22,8 +20,8 @@ const run = async () => {
   const componentService = new ComponentService(client)
   const environmentService = new EnvironmentService(client)
 
-  const redisClient = createRedisClient()
-  await redisClient.connect()
+  // const redisClient = createRedisClient()
+  // await redisClient.connect()
 
   logger.info(`Starting to gather dependency info`)
 
@@ -32,14 +30,14 @@ const run = async () => {
   const dependencyCalculator = new DependencyCalculator(AppInsightsServiceFactory, new DependencyInfoGatherer())
   const componentDependencies = await dependencyCalculator.calculateDependencies(components)
 
-  logger.info(`Starting to publish dependency info in Redis`)
-  const redisService = new RedisService(redisClient)
-  try {
-    await redisService.write(componentDependencies)
-  } finally {
-    await redisClient.quit()
-  }
-  logger.info(`Finished publishing dependency info in Redis`)
+  // logger.info(`Starting to publish dependency info in Redis`)
+  // const redisService = new RedisService(redisClient)
+  // try {
+  //   await redisService.write(componentDependencies)
+  // } finally {
+  //   await redisClient.quit()
+  // }
+  // logger.info(`Finished publishing dependency info in Redis`)
 
   logger.info(`Starting update of service catalogue with dependent counts`)
   const dependencyCountService = new DependencyCountService(componentService)

@@ -27,9 +27,9 @@ export class AppInsightsService {
     }
     return results.rows.map(row => ({
       componentName: row[0],
-      inbound_sqs_queues: parseMessagingArray(row[1]),
-      outbound_sns_topics: parseMessagingArray(row[2]),
-      outbound_sqs_queues: parseMessagingArray(row[3]),
+      inboundSqsQueues: parseMessagingArray(row[1]),
+      outboundSnsTopics: parseMessagingArray(row[2]),
+      outboundSqsQueues: parseMessagingArray(row[3]),
     }))
   }
 }

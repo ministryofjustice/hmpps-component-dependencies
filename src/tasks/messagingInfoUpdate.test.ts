@@ -2,7 +2,7 @@ import { EnvType, type Environment } from '../config'
 import { AppInsightsService } from '../data/appInsights/appInsightsService'
 import { type MessagingInfo, Components, type Component } from '../data/Components'
 import EnvironmentService from '../data/serviceCatalogue/environmentService'
-import { MessagingInfoService } from './messaging-info-update'
+import { MessagingInfoService } from './messagingInfoUpdate'
 
 const environmentService: jest.Mocked<EnvironmentService> = new EnvironmentService(
   null,
@@ -27,9 +27,9 @@ const preprodEnvironment: Environment = {
 const sampleMessagingInfo: MessagingInfo[] = [
   {
     componentName: 'component-a',
-    inbound_sqs_queues: ['inbound-a'],
-    outbound_sns_topics: ['topic-a'],
-    outbound_sqs_queues: ['outbound-a'],
+    inboundSqsQueues: ['inbound-a'],
+    outboundSnsTopics: ['topic-a'],
+    outboundSqsQueues: ['outbound-a'],
   },
 ]
 
@@ -73,9 +73,9 @@ describe('MessagingInfoService', () => {
         [
           {
             componentName: 'component-a',
-            inbound_sqs_queues: ['inbound-a'],
-            outbound_sns_topics: ['topic-a'],
-            outbound_sqs_queues: ['outbound-a'],
+            inboundSqsQueues: ['inbound-a'],
+            outboundSnsTopics: ['topic-a'],
+            outboundSqsQueues: ['outbound-a'],
           },
         ],
       ],
@@ -84,9 +84,9 @@ describe('MessagingInfoService', () => {
         [
           {
             componentName: 'component-a',
-            inbound_sqs_queues: ['inbound-a'],
-            outbound_sns_topics: ['topic-a'],
-            outbound_sqs_queues: ['outbound-a'],
+            inboundSqsQueues: ['inbound-a'],
+            outboundSnsTopics: ['topic-a'],
+            outboundSqsQueues: ['outbound-a'],
           },
         ],
       ],

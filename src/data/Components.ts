@@ -12,9 +12,9 @@ export type Component = {
 export type Dependency = { componentName: string; dependencyHostname: string; type: string }
 export type MessagingInfo = {
   componentName: string
-  inbound_sqs_queues: string[]
-  outbound_sns_topics: string[]
-  outbound_sqs_queues: string[]
+  inboundSqsQueues: string[]
+  outboundSnsTopics: string[]
+  outboundSqsQueues: string[]
 }
 export type ComponentMap = Record<string, ComponentNode>
 

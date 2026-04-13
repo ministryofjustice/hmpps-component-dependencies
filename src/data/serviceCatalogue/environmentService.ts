@@ -13,10 +13,10 @@ class EnvironmentService {
       componentByName.set(component.name, component)
     })
 
-    for (const [environment, MessagingInfos] of messagingInfoByEnvironment) {
+    for (const [environment, messagingInfos] of messagingInfoByEnvironment) {
       const targetEnvironment = environment.toLowerCase()
 
-      for (const config of MessagingInfos) {
+      for (const config of messagingInfos) {
         // eslint-disable-next-line no-await-in-loop -- Intentionally sequential to avoid overwhelming downstream API updates.
         await this.updateMessagingInfoForEnvironment(targetEnvironment, componentByName, config)
       }
@@ -47,7 +47,7 @@ class EnvironmentService {
     }
 
     try {
-      await this.client.putEnvironmentAwsMessagingInfo({ environmentDocumentId, MessagingInfo: update })
+      await this.client.putEnvironmentAwsMessagingInfo({ environmentDocumentId, messagingInfo: update })
     } catch (error) {
       logger.error(
         `Failed to update messaging config for component ${update.componentName} in environment ${environment} (environmentDocumentId: ${environmentDocumentId})`,

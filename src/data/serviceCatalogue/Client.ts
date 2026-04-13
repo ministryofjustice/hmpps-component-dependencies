@@ -40,17 +40,17 @@ export class Client extends RestClient {
 
   async putEnvironmentAwsMessagingInfo({
     environmentDocumentId,
-    MessagingInfo,
+    messagingInfo,
   }: {
     environmentDocumentId: string
-    MessagingInfo: Omit<MessagingInfo, 'componentName'>
+    messagingInfo: Omit<MessagingInfo, 'componentName'>
   }) {
     const payload = {
       data: {
         aws_messaging_config: {
-          inbound_sqs_queues: MessagingInfo.inbound_sqs_queues,
-          outbound_sns_topics: MessagingInfo.outbound_sns_topics,
-          outbound_sqs_queues: MessagingInfo.outbound_sqs_queues,
+          inbound_sqs_queues: messagingInfo.inboundSqsQueues,
+          outbound_sns_topics: messagingInfo.outboundSnsTopics,
+          outbound_sqs_queues: messagingInfo.outboundSqsQueues,
         },
       },
     }

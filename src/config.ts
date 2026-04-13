@@ -31,7 +31,7 @@ const config = {
   serviceCatalogue: {
     url: get<string>('SERVICE_CATALOGUE_URL', 'https://mock-service-catalogue'),
     timeout: {
-      deadline: parseInt(process.env.SC_DEADLINE, 10) || 5000,
+      deadline: parseInt(process.env.SC_DEADLINE, 10) || 15000,
       response: parseInt(process.env.SC_RESPONSE, 10) || 10000,
     },
     agent: new AgentConfig(10000),
