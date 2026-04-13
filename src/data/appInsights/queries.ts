@@ -1,5 +1,5 @@
 const Queries = {
-  DEPENDENCIES: () => `
+  dependenciesQuery: () => `
       let since = ago(3d);
       dependencies
       | where timestamp > since
@@ -17,7 +17,7 @@ const Queries = {
           type = coalesce(type1, type)
       | where type <> "InProc" and type <> "Ajax"
 `,
-  MessagingInfo: () => `
+  messagingInfoQuery: () => `
         let since = ago(5d);
         union isfuzzy=true
             (

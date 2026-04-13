@@ -9,7 +9,7 @@ export class AppInsightsService {
   constructor(private readonly appInsights: AppInsights) {}
 
   async getDependencies(): Promise<Dependency[]> {
-    const results = await this.appInsights.query(Queries.DEPENDENCIES())
+    const results = await this.appInsights.query(Queries.dependenciesQuery())
     if (!results || !results.rows) {
       return []
     }
@@ -21,7 +21,7 @@ export class AppInsightsService {
   }
 
   async getMessagingInfo(): Promise<MessagingInfo[]> {
-    const results = await this.appInsights.query(Queries.MessagingInfo())
+    const results = await this.appInsights.query(Queries.messagingInfoQuery())
     if (!results || !results.rows) {
       return []
     }
