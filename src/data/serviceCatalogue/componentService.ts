@@ -1,13 +1,9 @@
-import { Client } from './Client'
+import { type Client } from './Client'
 import { Components } from '../Components'
 import logger from '../../utils/logger'
 
 class ComponentService {
-  private client: Client
-
-  constructor() {
-    this.client = new Client()
-  }
+  constructor(private readonly client: Client) {}
 
   async getComponents(): Promise<Components> {
     const components = await this.client.getComponents()
@@ -25,6 +21,7 @@ class ComponentService {
                 name: env.name,
                 hostname: env.url.replace('https://', ''),
                 clusterHostname: `${entry.name}.${env.namespace}.svc.cluster.local`,
+                documentId: env.documentId,
               }))
           : [],
       }))

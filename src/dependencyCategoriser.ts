@@ -1,4 +1,4 @@
-import type { Dependency } from './data/Components'
+import { type Dependency } from './data/Components'
 
 const hostnameIncludes = (...values: string[]) => {
   const valuesToCheck = values.map(value => value.toLowerCase())

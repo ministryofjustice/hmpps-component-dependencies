@@ -1,4 +1,4 @@
-import categorise from './dependency-categoriser'
+import categorise from './dependencyCategoriser'
 
 describe('dependency categoriser', () => {
   test('http', () => {

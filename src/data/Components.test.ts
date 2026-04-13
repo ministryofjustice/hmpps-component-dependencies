@@ -6,13 +6,27 @@ describe('Components', () => {
       name: 'comp-1',
       cloudRoleName: 'comp1',
       dependentCount: 2,
-      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp1env1',
+          name: 'dev',
+          hostname: 'http://component1',
+          clusterHostname: 'comp1.comp1-dev.svc.cluster.local',
+        },
+      ],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
       dependentCount: 1,
-      envs: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp2env1',
+          name: 'dev',
+          hostname: 'http://component2',
+          clusterHostname: 'comp2.comp2-dev.svc.cluster.local',
+        },
+      ],
     }
 
     const components = new Components([component1, component2])
@@ -47,13 +61,27 @@ describe('Components', () => {
       name: 'comp-1',
       cloudRoleName: 'comp1',
       dependentCount: 2,
-      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp1env1',
+          name: 'dev',
+          hostname: 'http://component1',
+          clusterHostname: 'comp1.comp1-dev.svc.cluster.local',
+        },
+      ],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
       dependentCount: 1,
-      envs: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp2env1',
+          name: 'dev',
+          hostname: 'http://component2',
+          clusterHostname: 'comp2.comp2-dev.svc.cluster.local',
+        },
+      ],
     }
 
     const components = new Components([component1, component2])
@@ -88,7 +116,14 @@ describe('Components', () => {
       name: 'comp-1',
       cloudRoleName: 'comp1',
       dependentCount: 2,
-      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp1env1',
+          name: 'dev',
+          hostname: 'http://component1',
+          clusterHostname: 'comp1.comp1-dev.svc.cluster.local',
+        },
+      ],
     }
     const component2: Component = {
       name: 'comp-2',
@@ -130,7 +165,14 @@ describe('Components', () => {
       name: 'comp-1',
       cloudRoleName: 'comp1',
       dependentCount: 2,
-      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp1env1',
+          name: 'dev',
+          hostname: 'http://component1',
+          clusterHostname: 'comp1.comp1-dev.svc.cluster.local',
+        },
+      ],
     }
 
     const components = new Components([component1])
@@ -157,7 +199,14 @@ describe('Components', () => {
       name: 'comp-1',
       cloudRoleName: 'comp1',
       dependentCount: 2,
-      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp1env1',
+          name: 'dev',
+          hostname: 'http://component1',
+          clusterHostname: 'comp1.comp1-dev.svc.cluster.local',
+        },
+      ],
     }
 
     const components = new Components([component1])
@@ -182,7 +231,14 @@ describe('Components', () => {
       name: 'comp-1',
       cloudRoleName: 'comp1',
       dependentCount: 2,
-      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp1env1',
+          name: 'dev',
+          hostname: 'http://component1',
+          clusterHostname: 'comp1.comp1-dev.svc.cluster.local',
+        },
+      ],
     }
 
     const components = new Components([component1])
@@ -209,13 +265,27 @@ describe('Components', () => {
       name: 'comp-1',
       cloudRoleName: 'comp1',
       dependentCount: 2,
-      envs: [{ name: 'dev', hostname: 'http://component1', clusterHostname: 'comp1.comp1-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp1env1',
+          name: 'dev',
+          hostname: 'http://component1',
+          clusterHostname: 'comp1.comp1-dev.svc.cluster.local',
+        },
+      ],
     }
     const component2: Component = {
       name: 'comp-2',
       cloudRoleName: 'comp2',
       dependentCount: 1,
-      envs: [{ name: 'dev', hostname: 'http://component2', clusterHostname: 'comp2.comp2-dev.svc.cluster.local' }],
+      envs: [
+        {
+          documentId: 'documentidcomp2env1',
+          name: 'dev',
+          hostname: 'http://component2',
+          clusterHostname: 'comp2.comp2-dev.svc.cluster.local',
+        },
+      ],
     }
 
     const components = new Components([component1, component2])

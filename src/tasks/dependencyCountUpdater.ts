@@ -1,8 +1,8 @@
-import { type ComponentInfo, type DependencyInfo } from './dependency-info-gatherer'
-import logger from './utils/logger'
-import { type Components, Component } from './data/Components'
-import { EnvType } from './config'
-import ComponentService from './data/serviceCatalogue'
+import { type ComponentInfo, type DependencyInfo } from './dependencyInfoGatherer'
+import logger from '../utils/logger'
+import { Components, type Component } from '../data/Components'
+import { EnvType } from '../config'
+import ComponentService from '../data/serviceCatalogue/componentService'
 
 export type ComponentDependentDetails = {
   documentId?: string
@@ -11,6 +11,8 @@ export type ComponentDependentDetails = {
 }
 
 export class DependencyCountService {
+  constructor(private readonly componentService: ComponentService) {}
+
   getDependencyCounts(
     componentDependencies: Record<string, ComponentInfo>,
     validComponents: Component[],
@@ -26,32 +28,30 @@ export class DependencyCountService {
       const documentId = matchingComponent?.documentId
       if (!documentId) {
         logger.warn(`Component ${componentName} not found in service catalogue.`)
+      } else if (matchingComponent.dependentCount === dependentCount) {
+        logger.info(`Ignoring component ${componentName} as counts match.`)
       } else if (matchingComponent?.dependentCount !== dependentCount) {
         logger.info(
           `Updating component ${componentName} dependent_count (current: ${matchingComponent.dependentCount}, new: ${dependentCount})`,
         )
         dependencyCounts.push({ documentId, componentName, dependentCount })
-      } else if (matchingComponent.dependentCount === dependentCount) {
-        logger.info(`Ignoring component ${componentName} as counts match.`)
       }
     }
     return dependencyCounts
   }
 
-  async updateServiceCatalogueComponentDependentCount(
-    componentDependencies: [EnvType, DependencyInfo][],
+  async updateComponentDependentCount(
+    componentDependencies: Record<EnvType, DependencyInfo>,
     components: Components,
-    componentService: ComponentService,
   ): Promise<void> {
     const validComponents = Array.isArray(components.components) ? components.components : ([] as Component[])
-    const prodDependencyTuple = componentDependencies.find(([env]) => env === 'PROD')
+    const prodDependencyInfo = componentDependencies.PROD
 
-    if (!prodDependencyTuple) {
-      logger.info('No PROD environment found in componentDependencies.')
+    if (!prodDependencyInfo) {
+      logger.warn('No PROD environment found in componentDependencies.')
       return
     }
 
-    const [, prodDependencyInfo] = prodDependencyTuple
     const prodDependencies = prodDependencyInfo.componentDependencyInfo
 
     // Use the updated dependencyCountCalculator to get dependency counts along with documentId
@@ -60,8 +60,9 @@ export class DependencyCountService {
     // Loop through the returned data and call putComponent
     for (const { componentName, dependentCount, documentId } of dependencyCounts) {
       logger.info(`Updating dependency count of component: ${componentName}`)
-      // eslint-disable-next-line no-await-in-loop
-      await componentService.putComponent(documentId, dependentCount)
+
+      // eslint-disable-next-line no-await-in-loop -- Intentionally sequential to keep update flow predictable and logs ordered.
+      await this.componentService.putComponent(documentId, dependentCount)
       logger.info(`Updated dependency count of component ${componentName} to ${dependentCount}`)
     }
   }

@@ -1,12 +1,13 @@
 import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
 import logger from '../../utils/logger'
 import config from '../../config'
+import { type MessagingInfo } from '../Components'
 
 export type ServiceCatalogueComponent = {
   documentId: string
   name: string
   app_insights_cloud_role_name: string
-  envs?: { name: string; url: string; namespace: string }[]
+  envs?: { documentId?: string; name: string; url: string; namespace: string }[]
   dependent_count?: number
 }
 
@@ -30,6 +31,32 @@ export class Client extends RestClient {
     const response = await this.put<ServiceCatalogueResponse>(
       {
         path: `/v1/components/${documentId}`,
+        data: payload,
+      },
+      asSystem(),
+    )
+    return response.data
+  }
+
+  async putEnvironmentAwsMessagingInfo({
+    environmentDocumentId,
+    messagingInfo,
+  }: {
+    environmentDocumentId: string
+    messagingInfo: Omit<MessagingInfo, 'componentName'>
+  }) {
+    const payload = {
+      data: {
+        aws_messaging_config: {
+          inbound_sqs_queues: messagingInfo.inboundSqsQueues,
+          outbound_sns_topics: messagingInfo.outboundSnsTopics,
+          outbound_sqs_queues: messagingInfo.outboundSqsQueues,
+        },
+      },
+    }
+    const response = await this.put<{ data: unknown }>(
+      {
+        path: `/v1/environments/${environmentDocumentId}`,
         data: payload,
       },
       asSystem(),

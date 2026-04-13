@@ -1,5 +1,5 @@
-import { Component, Components } from './data/Components'
-import gatherDependencyInfo from './dependency-info-gatherer'
+import { Component, Components } from '../data/Components'
+import { DependencyInfoGatherer } from './dependencyInfoGatherer'
 
 describe('DependencyInfoGatherer', () => {
   test('simple example', () => {
@@ -43,7 +43,7 @@ describe('DependencyInfoGatherer', () => {
       { componentName: component1.name, type: 'http', dependencyHostname: 'http://gotenberg' },
     ])
 
-    const dependencyInfo = gatherDependencyInfo(map)
+    const dependencyInfo = new DependencyInfoGatherer().gatherDependencyInfo(map)
 
     expect(dependencyInfo).toStrictEqual({
       categoryToComponent: {

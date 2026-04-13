@@ -52,3 +52,29 @@ We could also use this linked dependency information to support:
 - Only works for applications using AppInsights
 
 - Needs some thorough testing
+
+## Running locally
+
+1. Start Redis with Docker Compose:
+
+```bash
+docker compose up -d redis
+```
+
+2. Set the required local Redis environment variables:
+
+```bash
+export REDIS_HOST=localhost
+export REDIS_PORT=6379
+export REDIS_TLS_ENABLED=false
+```
+
+3. Set all environment variables specified in `.env.example`.
+
+4. Install dependencies and run:
+
+```bash
+npm install
+npm run build
+npm start
+```

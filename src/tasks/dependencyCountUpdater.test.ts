@@ -1,27 +1,26 @@
-import { DependencyCountService } from './dependency-count-sc-update'
-import { ComponentInfo } from './dependency-info-gatherer'
-import ComponentService from './data/serviceCatalogue'
-import { Component, Components } from './data/Components'
-import logger from './utils/logger'
+import { DependencyCountService } from './dependencyCountUpdater'
+import ComponentService from '../data/serviceCatalogue/componentService'
+import { Components, type Component } from '../data/Components'
+import { EnvType } from '../config'
+import logger from '../utils/logger'
+import { type ComponentInfo, type DependencyInfo } from './dependencyInfoGatherer'
+
+jest.mock('../data/serviceCatalogue/componentService')
 
 describe('DependencyCountService ', () => {
   let dependencyCountService: DependencyCountService
-  let mockComponentService: jest.Mocked<ComponentService>
+  let componentService: jest.Mocked<ComponentService>
 
   beforeEach(() => {
-    dependencyCountService = new DependencyCountService()
-
-    mockComponentService = {
-      putComponent: jest.fn(),
-    } as unknown as jest.Mocked<ComponentService>
+    componentService = new ComponentService(null) as jest.Mocked<ComponentService>
+    dependencyCountService = new DependencyCountService(componentService)
 
     jest.spyOn(logger, 'info').mockImplementation(() => {})
     jest.spyOn(logger, 'warn').mockImplementation(() => {})
-
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    jest.resetAllMocks()
   })
 
   describe('getDependencyCounts', () => {
@@ -40,6 +39,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 0,
         envs: [
           {
+            documentId: 'documentidcomp1env1',
             name: 'dev',
             hostname: 'http://component1',
             clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
@@ -53,6 +53,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 12,
         envs: [
           {
+            documentId: 'documentidcomp2env1',
             name: 'dev',
             hostname: 'http://component2',
             clusterHostname: 'ComponentB.ComponentB-dev.svc.cluster.local',
@@ -66,6 +67,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 5,
         envs: [
           {
+            documentId: 'documentidcomp3env1',
             name: 'dev',
             hostname: 'http://component3',
             clusterHostname: 'ComponentC.ComponentC-dev.svc.cluster.local',
@@ -110,6 +112,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 2,
         envs: [
           {
+            documentId: 'documentidcomp1env1',
             name: 'dev',
             hostname: 'http://component1',
             clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
@@ -139,6 +142,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 1,
         envs: [
           {
+            documentId: 'documentidcomp1env1',
             name: 'dev',
             hostname: 'http://componentA',
             clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
@@ -168,6 +172,7 @@ describe('DependencyCountService ', () => {
         dependentCount: 2,
         envs: [
           {
+            documentId: 'documentidcomp2env1',
             name: 'dev',
             hostname: 'http://component2',
             clusterHostname: 'ComponentB.ComponentB-dev.svc.cluster.local',
@@ -192,10 +197,10 @@ describe('DependencyCountService ', () => {
       const result = dependencyCountService.getDependencyCounts(componentDependencies, components.components)
 
       expect(result).toEqual([{ documentId: 'doc-2', componentName: 'ComponentB', dependentCount: 0 }])
-    })  
+    })
   })
 
-  describe('updateServiceCatalogueComponentDependentCount', () => {
+  describe('update component dependent count', () => {
     it('should update service catalogue with dependency counts for PROD environment', async () => {
       const component1: Component = {
         documentId: 'doc-1',
@@ -204,85 +209,71 @@ describe('DependencyCountService ', () => {
         dependentCount: 0,
         envs: [
           {
-            name: 'dev',
+            documentId: 'documentidcomp1env1',
+            name: 'prod',
             hostname: 'http://component1',
-            clusterHostname: 'ComponentA.ComponentA-dev.svc.cluster.local',
+            clusterHostname: 'ComponentA.ComponentA-prod.svc.cluster.local',
           },
         ],
       }
       const components = new Components([component1])
 
-      const componentDependencies: [string, any][] = [
-        [
-          'PROD',
-          {
-            componentDependencyInfo: {
-              ComponentA: {
-                dependents: [{ name: 'ComponentB', isKnownComponent: true }],
-                dependencies: { components: [], categories: [], other: [] },
-              },
+      const componentDependencies: Record<EnvType, DependencyInfo> = {
+        [EnvType.PROD]: {
+          categoryToComponent: {},
+          componentDependencyInfo: {
+            ComponentA: {
+              dependents: [{ name: 'ComponentB', isKnownComponent: true }],
+              dependencies: { components: [], categories: [], other: [] },
             },
           },
-        ],
-      ]
+          missingServices: [],
+        } as DependencyInfo,
+      } as Record<EnvType, DependencyInfo>
 
-      await dependencyCountService.updateServiceCatalogueComponentDependentCount(
-        componentDependencies as [any, any][],
-        components,
-        mockComponentService,
-      )
+      await dependencyCountService.updateComponentDependentCount(componentDependencies, components)
 
-      expect(mockComponentService.putComponent).toHaveBeenCalledWith('doc-1', 1)
+      expect(componentService.putComponent).toHaveBeenCalledWith('doc-1', 1)
     })
 
     it('should log a warning if no PROD environment is found', async () => {
       const components = new Components([])
 
-      const componentDependencies: [string, any][] = [
-        [
-          'DEV',
-          {
-            componentDependencyInfo: {},
-          },
-        ],
-      ]
+      const componentDependencies: Record<EnvType, DependencyInfo> = {
+        [EnvType.DEV]: {
+          categoryToComponent: {},
+          componentDependencyInfo: {},
+          missingServices: [],
+        },
+      } as Record<EnvType, DependencyInfo>
 
-      await dependencyCountService.updateServiceCatalogueComponentDependentCount(
-        componentDependencies as [any, any][],
-        components,
-        mockComponentService,
-      )
+      await dependencyCountService.updateComponentDependentCount(componentDependencies, components)
 
       expect(logger.warn).toHaveBeenCalledWith('No PROD environment found in componentDependencies.')
-      expect(mockComponentService.putComponent).not.toHaveBeenCalled()
+      expect(componentService.putComponent).not.toHaveBeenCalled()
     })
 
     it('should log a warning if a component is not found in the service catalogue', async () => {
       const componentName = 'MissingComponent'
       const components = new Components([]) // Empty components list to simulate missing component
 
-      const componentDependencies: [string, any][] = [
-        [
-          'PROD',
-          {
-            componentDependencyInfo: {
-              [componentName]: {
-                dependents: [],
-                dependencies: { components: [], categories: [], other: [] },
-              },
+      const componentDependencies: Record<EnvType, DependencyInfo> = {
+        [EnvType.PROD]: {
+          categoryToComponent: {},
+          componentDependencyInfo: {
+            [componentName]: {
+              dependents: [],
+              dependencies: { components: [], categories: [], other: [] },
             },
           },
-        ],
-      ]
+          missingServices: [],
+        } as DependencyInfo,
+      } as Record<EnvType, DependencyInfo>
 
-      await dependencyCountService.updateServiceCatalogueComponentDependentCount(
-        componentDependencies as [any, any][],
-        components,
-        mockComponentService,
-      )
+      await dependencyCountService.updateComponentDependentCount(componentDependencies, components)
 
       expect(logger.warn).toHaveBeenCalledWith(`Component ${componentName} not found in service catalogue.`)
-      expect(mockComponentService.putComponent).not.toHaveBeenCalled()
+      expect(componentService.putComponent).not.toHaveBeenCalled()
     })
   })
 })
