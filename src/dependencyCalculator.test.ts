@@ -1,10 +1,10 @@
 import { EnvType } from './config'
-import type { AppInsightsServiceFactory } from './data/appInsights/appInsightsService'
+import { type AppInsightsServiceFactory } from './data/appInsights/appInsightsService'
 import { AppInsightsService } from './data/appInsights/appInsightsService'
 import { Components, type Component, type Dependency } from './data/Components'
 import DependencyCalculator from './dependencyCalculator'
 import { DependencyInfoGatherer } from './tasks/dependencyInfoGatherer'
-import type { DependencyInfo } from './tasks/dependencyInfoGatherer'
+import { type DependencyInfo } from './tasks/dependencyInfoGatherer'
 
 const appInsightsService: jest.Mocked<AppInsightsService> = new AppInsightsService(
   null,

@@ -1,4 +1,4 @@
-import type { Dependency, ComponentMap } from '../data/Components'
+import { type Dependency, type ComponentMap } from '../data/Components'
 
 type DependencyReference = { name: string; type: string }
 type Dependent = { name: string; isKnownComponent: boolean }

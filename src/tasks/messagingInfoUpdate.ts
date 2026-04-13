@@ -1,6 +1,6 @@
-import type { EnvType, Environment } from '../config'
-import type { AppInsightsServiceFactory } from '../data/appInsights/appInsightsService'
-import type { Components, MessagingInfo } from '../data/Components'
+import { type EnvType, type Environment } from '../config'
+import { type AppInsightsServiceFactory } from '../data/appInsights/appInsightsService'
+import { type Components, type MessagingInfo } from '../data/Components'
 import type EnvironmentService from '../data/serviceCatalogue/environmentService'
 import logger from '../utils/logger'
 

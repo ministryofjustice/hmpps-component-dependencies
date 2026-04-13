@@ -1,6 +1,6 @@
 import config, { type Environment, type EnvType } from './config'
-import type { AppInsightsServiceFactory } from './data/appInsights/appInsightsService'
-import type { Components } from './data/Components'
+import { type AppInsightsServiceFactory } from './data/appInsights/appInsightsService'
+import { type Components } from './data/Components'
 import { DependencyInfoGatherer, type DependencyInfo } from './tasks/dependencyInfoGatherer'
 import logger from './utils/logger'
 

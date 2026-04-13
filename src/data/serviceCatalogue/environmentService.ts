@@ -1,4 +1,4 @@
-import type { Client } from './Client'
+import { type Client } from './Client'
 import { Component, Components, type MessagingInfo } from '../Components'
 import logger from '../../utils/logger'
 import { type EnvType } from '../../config'

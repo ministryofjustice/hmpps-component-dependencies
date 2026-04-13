@@ -1,4 +1,4 @@
-import type { Client } from './Client'
+import { type Client } from './Client'
 import { Components } from '../Components'
 import logger from '../../utils/logger'
 
