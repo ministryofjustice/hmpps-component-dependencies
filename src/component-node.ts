@@ -1,5 +1,5 @@
-import type { Component, Dependency } from './data/Components'
-import categorise from './dependency-categoriser'
+import { type Component, type Dependency } from './data/Components'
+import categorise from './dependencyCategoriser'
 
 export default class ComponentNode {
   public unknownDependencies: Dependency[] = []
