@@ -1,6 +1,6 @@
 import { DependencyCountService } from './dependencyCountUpdater'
 import ComponentService from '../data/serviceCatalogue/componentService'
-import { type Components, type Component } from '../data/Components'
+import { Components, type Component } from '../data/Components'
 import { EnvType } from '../config'
 import logger from '../utils/logger'
 import { type ComponentInfo, type DependencyInfo } from './dependencyInfoGatherer'
