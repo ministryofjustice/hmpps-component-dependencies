@@ -4,14 +4,11 @@ Environment variables for web and worker containers
 */}}
 {{- define "deployment.envs" -}}
 env:
-  - name: APPINSIGHTS_INSTRUMENTATIONKEY
+  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     valueFrom:
       secretKeyRef:
         name: {{ template "app.name" . }}
-        key: APPINSIGHTS_INSTRUMENTATIONKEY
-
-  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
-    value: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
+        key: APPLICATIONINSIGHTS_CONNECTION_STRING
 
 {{range .Values.appinsightEnvs }}
   - name: {{ . }}_APPINSIGHTS_ID
