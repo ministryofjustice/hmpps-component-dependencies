@@ -47,6 +47,7 @@ const sampleDependencyInfo: DependencyInfo = {
 
 let calculator: DependencyCalculator
 let factory: jest.MockedFunction<AppInsightsServiceFactory>
+let components: Components
 
 const sampleComponent: Component = {
   name: 'component-a',
@@ -73,14 +74,13 @@ describe('DependencyCalculator', () => {
     jest.clearAllMocks()
     factory = jest.fn().mockReturnValue(appInsightsService)
     calculator = new DependencyCalculator(factory, dependencyInfoGatherer)
-  })
-
-  test('calculates dependencies for all configured environments', async () => {
-    const components = new Components([sampleComponent])
+    components = new Components([sampleComponent])
 
     appInsightsService.getDependencies = jest.fn().mockResolvedValue(sampleDependencies)
     dependencyInfoGatherer.gatherDependencyInfo.mockReturnValue(sampleDependencyInfo)
+  })
 
+  test('calculates dependencies for all configured environments', async () => {
     const result = await calculator.calculateDependencies(components)
 
     expect(result).toHaveProperty(EnvType.DEV)
@@ -88,33 +88,18 @@ describe('DependencyCalculator', () => {
   })
 
   test('calls app insights service factory with correct credentials', async () => {
-    const components = new Components([sampleComponent])
-
-    appInsightsService.getDependencies = jest.fn().mockResolvedValue(sampleDependencies)
-    dependencyInfoGatherer.gatherDependencyInfo.mockReturnValue(sampleDependencyInfo)
-
     await calculator.calculateDependencies(components)
 
     expect(factory).toHaveBeenCalled()
   })
 
   test('retrieves dependencies from app insights for each environment', async () => {
-    const components = new Components([sampleComponent])
-
-    appInsightsService.getDependencies = jest.fn().mockResolvedValue(sampleDependencies)
-    dependencyInfoGatherer.gatherDependencyInfo.mockReturnValue(sampleDependencyInfo)
-
     await calculator.calculateDependencies(components)
 
     expect(appInsightsService.getDependencies).toHaveBeenCalled()
   })
 
   test('builds component map and gathers dependency info', async () => {
-    const components = new Components([sampleComponent])
-
-    appInsightsService.getDependencies = jest.fn().mockResolvedValue(sampleDependencies)
-    dependencyInfoGatherer.gatherDependencyInfo.mockReturnValue(sampleDependencyInfo)
-
     await calculator.calculateDependencies(components)
 
     expect(dependencyInfoGatherer.gatherDependencyInfo).toHaveBeenCalled()
