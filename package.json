@@ -75,7 +75,7 @@
     "@ministryofjustice/hmpps-precommit-hooks": "^2.0.2",
     "@tsconfig/node24": "^24.0.4",
     "@types/jest": "^30.0.0",
-    "@types/superagent": "^8.1.9",
+    "@types/superagent": "^8.1.10",
     "audit-ci": "^7.1.0",
     "dotenv": "^17.4.2",
     "jest": "^30.4.2",
