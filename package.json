@@ -13,9 +13,6 @@
     "prepare": "hmpps-precommit-hooks-prepare",
     "build": "rm -rf dist && tsc",
     "security_audit": "npx audit-ci --config audit-ci.json",
-    "precommit:secrets": "gitleaks git --pre-commit --redact --staged --verbose --config .gitleaks/config.toml",
-    "precommit:lint": "node_modules/.bin/lint-staged",
-    "precommit:verify": "npm run typecheck && npm test",
     "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "author": "Andrew Lee",
@@ -79,7 +76,7 @@
     "audit-ci": "^7.1.0",
     "dotenv": "^17.4.2",
     "jest": "^30.4.2",
-    "jest-html-reporter": "^4.3.0",
+    "jest-html-reporter": "^4.4.0",
     "jest-junit": "^17.0.0",
     "lint-staged": "^17.0.7",
     "prettier": "^3.8.3",
