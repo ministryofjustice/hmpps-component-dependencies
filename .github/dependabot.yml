@@ -5,11 +5,22 @@ updates:
       default-days: 7
     directory: "/"        
     schedule:
-      interval: "weekly"  
+      interval: "weekly"
   - package-ecosystem: "github-actions"
+    cooldown:
+      default-days: 7
     directory: "/.github"  
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "ministryofjustice/hmpps-github-actions/*"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+    groups:
+      github-actions-files:
+        patterns:
+          - "*"
   - package-ecosystem: "helm"
     directory: "/helm_deploy/hmpps-component-dependencies"  
     schedule:
