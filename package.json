@@ -82,7 +82,7 @@
     "jest-html-reporter": "^4.4.0",
     "jest-junit": "^17.0.0",
     "lint-staged": "^17.0.8",
-    "prettier": "^3.8.3",
+    "prettier": "^3.9.4",
     "ts-jest": "^29.4.9",
     "typescript": "^6.0.3"
   },
