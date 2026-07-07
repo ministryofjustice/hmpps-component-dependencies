@@ -3,6 +3,8 @@
   "compileOnSave": true,
   "compilerOptions": {
     "isolatedModules": true,
+    "types": ["node", "jest"],
+    "rootDir": "./src",
     "outDir": "./dist",
     "sourceMap": true,
     "noEmit": false,
