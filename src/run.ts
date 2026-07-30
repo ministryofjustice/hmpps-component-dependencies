@@ -16,25 +16,6 @@ import { DependencyInfoGatherer } from './tasks/dependencyInfoGatherer'
 
 initialiseAppInsights(applicationInfo())
 
-const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY || process.env.https_proxy || process.env.http_proxy
-const serviceCatalogueProxyEnv = (
-  config.serviceCatalogue.agent as {
-    proxyEnv?: { http_proxy?: string; https_proxy?: string; no_proxy?: string }
-  }
-).proxyEnv
-logger.info(
-  {
-    proxyMode: proxyUrl ? 'ENABLED' : 'DISABLED',
-    proxyConfigured: Boolean(proxyUrl),
-    noProxyConfigured: Boolean(process.env.NO_PROXY || process.env.no_proxy),
-    serviceCatalogueProxyConfigured: Boolean(
-      serviceCatalogueProxyEnv?.https_proxy || serviceCatalogueProxyEnv?.http_proxy,
-    ),
-    serviceCatalogueNoProxyConfigured: Boolean(serviceCatalogueProxyEnv?.no_proxy),
-  },
-  'Outbound proxy mode',
-)
-
 const run = async () => {
   const client = new Client()
   const componentService = new ComponentService(client)

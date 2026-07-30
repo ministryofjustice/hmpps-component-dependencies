@@ -53,6 +53,12 @@ env:
   - name: PRODUCT_ID
     value: "DPS000"
 
+  - name: PRODUCT_ID
+    value: "DPS000"
+
+  - name: NODE_USE_ENV_PROXY
+    value: "1"
+
 {{- if .Values.namespace_secrets }}
 {{- range $secret, $envs := .Values.namespace_secrets }}
   {{- range $key, $val := $envs }}

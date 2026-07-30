@@ -22,13 +22,6 @@ function get<T>(name: string, fallback: T = undefined): T | string {
   throw new Error(`Missing env var ${name}`)
 }
 
-const serviceCatalogueUrl = get<string>('SERVICE_CATALOGUE_URL', 'https://mock-service-catalogue')
-const proxyEnv = {
-  http_proxy: process.env.HTTP_PROXY || process.env.http_proxy,
-  https_proxy: process.env.HTTPS_PROXY || process.env.https_proxy,
-  no_proxy: process.env.NO_PROXY || process.env.no_proxy,
-}
-
 const config = {
   production,
   buildNumber: get('BUILD_NUMBER', '1_0_0'),
@@ -36,15 +29,12 @@ const config = {
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx'),
   branchName: get('GIT_BRANCH', 'xxxxxxxxxxxxxxxxxxx'),
   serviceCatalogue: {
-    url: serviceCatalogueUrl,
+    url: get<string>('SERVICE_CATALOGUE_URL', 'https://mock-service-catalogue'),
     timeout: {
       deadline: parseInt(process.env.SC_DEADLINE, 10) || 15000,
       response: parseInt(process.env.SC_RESPONSE, 10) || 10000,
     },
-    agent: {
-      ...new AgentConfig(10000),
-      proxyEnv,
-    },
+    agent: new AgentConfig(10000),
     token: get<string>('SERVICE_CATALOGUE_TOKEN', 'mock-service-catalogue-token'),
   },
   redis: {
