@@ -53,4 +53,19 @@ env:
   - name: PRODUCT_ID
     value: "DPS000"
 
+{{- if .Values.namespace_secrets }}
+{{- range $secret, $envs := .Values.namespace_secrets }}
+  {{- range $key, $val := $envs }}
+  - name: {{ $key }}
+    valueFrom:
+      secretKeyRef:
+        key: {{ trimSuffix "?" $val }}
+        name: {{ $secret }}
+{{ if hasSuffix "?" $val }}
+        optional: true
+{{ end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
 {{end -}}
