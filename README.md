@@ -66,7 +66,9 @@ docker compose up -d redis
 ```bash
 export REDIS_HOST=localhost
 export REDIS_PORT=6379
-export REDIS_TLS_ENABLED=false
+export REDIS_TLS_ENABLED=true
+export REDIS_TLS_VERIFICATION=false
+export REDIS_AUTH_TOKEN=auth_token_from_secret
 ```
 
 3. Set all environment variables specified in `.env.example`.

@@ -22,7 +22,7 @@ env:
       secretKeyRef:
         name: {{ template "app.name" $ }}
         key: {{ . }}_APPINSIGHTS_KEY
-{{ end }}  
+{{ end }}
   - name: SERVICE_CATALOGUE_URL
     value: {{ .Values.apis.serviceCatalogue.url | quote }}
 
@@ -49,8 +49,29 @@ env:
 
   - name: REDIS_TLS_VERIFICATION
     value: "true"
-    
+
   - name: PRODUCT_ID
     value: "DPS000"
+
+  - name: NODE_USE_ENV_PROXY
+    value: "1"
+
+  - name: APPLICATION_INSIGHTS_NO_STATSBEAT
+    value: "true"
+
+{{- if .Values.namespace_secrets }}
+{{- range $secret, $envs := .Values.namespace_secrets }}
+  {{- range $key, $val := $envs }}
+  - name: {{ $key }}
+    valueFrom:
+      secretKeyRef:
+        key: {{ trimSuffix "?" $val }}
+        name: {{ $secret }}
+{{ if hasSuffix "?" $val }}
+        optional: true
+{{ end }}
+  {{- end }}
+{{- end }}
+{{- end }}
 
 {{end -}}

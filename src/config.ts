@@ -28,6 +28,14 @@ const config = {
   productId: get('PRODUCT_ID', 'MISSING'),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx'),
   branchName: get('GIT_BRANCH', 'xxxxxxxxxxxxxxxxxxx'),
+  appInsightsApi: {
+    url: 'https://api.applicationinsights.io',
+    timeout: {
+      deadline: parseInt(process.env.APP_INSIGHTS_DEADLINE, 10) || 120000,
+      response: parseInt(process.env.APP_INSIGHTS_RESPONSE, 10) || 60000,
+    },
+    agent: new AgentConfig(parseInt(process.env.APP_INSIGHTS_SOCKET_TIMEOUT, 10) || 120000),
+  },
   serviceCatalogue: {
     url: get<string>('SERVICE_CATALOGUE_URL', 'https://mock-service-catalogue'),
     timeout: {
