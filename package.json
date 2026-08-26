@@ -99,7 +99,7 @@
     "ts-node": "^10.9.2"
   },
   "overrides": {
-    "brace-expansion": "5.0.8",
+    "brace-expansion": "5.0.9",
     "@opentelemetry/core": "2.10.0",
     "@opentelemetry/propagator-jaeger": "2.9.0",
     "@opentelemetry/exporter-logs-otlp-http": "0.219.0",
