@@ -79,7 +79,7 @@
     "audit-ci": "^7.1.0",
     "dotenv": "^17.4.2",
     "jest": "^30.4.2",
-    "jest-html-reporter": "^4.4.0",
+    "jest-html-reporter": "^4.4.2",
     "jest-junit": "^17.0.0",
     "lint-staged": "^17.5.1",
     "prettier": "^3.9.6",
