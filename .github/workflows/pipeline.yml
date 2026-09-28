@@ -54,7 +54,7 @@ jobs:
     needs:
       - build
       - helm_lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@feat/HEAT-1346-notify-sre-event-workflow-on-deploy # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_to_env.yml@feat/HEAT-1581-add-deploy-with-event-notify # WORKFLOW_VERSION
     secrets: inherit
     with:
       environment: 'dev'
