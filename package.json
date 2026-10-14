@@ -13,9 +13,6 @@
     "prepare": "hmpps-precommit-hooks-prepare",
     "build": "rm -rf dist && tsc",
     "security_audit": "npx audit-ci --config audit-ci.json",
-    "precommit:secrets": "gitleaks git --pre-commit --redact --staged --verbose --config .gitleaks/config.toml",
-    "precommit:lint": "node_modules/.bin/lint-staged",
-    "precommit:verify": "npm run typecheck && npm test",
     "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "author": "Andrew Lee",
@@ -99,7 +96,7 @@
     "ts-node": "^10.9.2"
   },
   "overrides": {
-    "brace-expansion": "5.0.9",
+    "brace-expansion": "5.0.12",
     "js-yaml": "4.3.1",
     "@istanbuljs/load-nyc-config": {
       "js-yaml": "3.15.1"
