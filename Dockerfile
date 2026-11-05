@@ -5,8 +5,8 @@ ARG GIT_BRANCH
 ARG PRODUCT_ID
 ARG BUILD_NAME
 
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS build-base
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine-runtime AS runtime-base
+FROM ghcr.io/ministryofjustice/hmpps-node:26-alpine AS build-base
+FROM ghcr.io/ministryofjustice/hmpps-node:26-alpine-runtime AS runtime-base
 
 # Stage: build assets
 FROM build-base AS build

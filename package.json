@@ -30,7 +30,7 @@
     ]
   },
   "engines": {
-    "node": "^24",
+    "node": "^26",
     "npm": "^11"
   },
   "jest": {
@@ -70,10 +70,10 @@
     ]
   },
   "devDependencies": {
-    "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
+    "@ministryofjustice/eslint-config-hmpps": "^1.0.4",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.6",
     "@ministryofjustice/hmpps-precommit-hooks": "^3.0.2",
-    "@tsconfig/node24": "^24.0.5",
+    "@tsconfig/node26": "^26.0.1",
     "@types/jest": "^30.0.0",
     "@types/superagent": "^8.1.11",
     "audit-ci": "^7.1.0",
